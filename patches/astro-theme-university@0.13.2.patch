@@ -1,0 +1,19 @@
+diff --git a/index.ts b/index.ts
+index 7f84b670eb0e4fec3d2d0c91e2b8b6fbb0580801..001d128fde414fb33f893f6748dca5cdd3b9b973 100644
+--- a/index.ts
++++ b/index.ts
+@@ -405,7 +405,13 @@ export default function universityTheme(options: ThemeOptions = {}): AstroIntegr
+                 "Add pagefind as a devDependency, or pass `search: false` to universityTheme().",
+             );
+           }
+-          await execFileAsync("npx", ["pagefind", "--site", distPath]);
++          // Windows' `npx` is `npx.cmd`, and `execFile` without a shell can't
++          // launch a .cmd directly --- it needs the shell to resolve it, same
++          // as `npm run` scripts do internally. Linux/macOS CI never hits
++          // this: `shell: true` there just runs it through /bin/sh, harmless.
++          await execFileAsync("npx", ["pagefind", "--site", distPath], {
++            shell: process.platform === "win32",
++          });
+           logger.info("Search index built.");
+         }
+ 

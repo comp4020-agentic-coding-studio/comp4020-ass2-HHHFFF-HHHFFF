@@ -6,3 +6,5 @@ allowBuilds:
   # has nothing to do --- and it breaks when a system libvips is present, where
   # it tries to compile from source and fails on the missing node-addon-api.
   sharp: false
+patchedDependencies:
+  astro-theme-university@0.13.2: patches/astro-theme-university@0.13.2.patch
