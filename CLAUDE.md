@@ -14,17 +14,50 @@ what the agent needs to carry from either is your call.
 - When a check fails, read its output before changing anything. Treat a red
   check as authoritative --- the page is wrong until the check is green, not
   until you decide it should be.
+- Never reshape production code to satisfy a test environment: no downgrading
+  a module script, no inline script added for JSDOM's benefit, no second copy
+  of core logic just for tests. If a test needs to drive an interactive state,
+  add a small seam on `window` that steps the same instance the visitor is
+  watching, not a parallel implementation.
+- If you write your own check, prove it would have failed on the commit before
+  the bug it targets --- a check that has never been red isn't a check.
 - Commit when the checks pass. Never commit a red state.
+
+### Verify a check by breaking what it names
+
+"Never been red isn't a check" has a second half. A past prototype's check on
+endless-mode difficulty --- *throws more enemy fire late in a run than early*
+--- stayed green 40 runs out of 40 with the difficulty ramp flattened to
+`return 1`. It had never sensed the ramp: late runs are busier because
+power-ups accumulate, so kills come faster and boss rounds come round more
+often. It had been passing for weeks while measuring something else.
+
+So before trusting a check, break the mechanism it claims to measure and
+confirm it fails. If it stays green, either the assertion or the name is
+wrong --- fix whichever it is, and make the check say which of the two it now
+does.
+
+Two traps from that failure, both relevant to a build with a search index and
+a data-integrity check that runs against real content:
+
+- **Don't sample something that varies at one instant.** Prefer counting or
+  asserting over the whole relevant range rather than a single snapshot, and
+  start from steady state so you aren't just measuring warm-up.
+- **Quantify a flake before fixing it.** If a check is intermittent, run it
+  enough times to read the actual failure rate. Whether a red is noise, and
+  how much margin a fix buys, are both numbers; guessing at them costs more
+  than measuring.
 
 ## This machine's environment
 
-Carried forward from Assignment 1, where these facts cost real time to find.
+Carried forward from earlier prototypes, where these facts cost real time to
+find.
 
 - There is no `agent-browser` CLI on this machine. Ground truth comes from
   headless Chrome directly:
 
   ```bash
-  pnpm build && npx vite preview --port 4173 --strictPort &
+  pnpm build && pnpm preview --port 4173 --strictPort &
   "/c/Program Files/Google/Chrome/Application/chrome.exe" --headless --disable-gpu \
     --hide-scrollbars --window-size=1920,1080 --virtual-time-budget=6000 \
     --screenshot="C:\Users\H-F\AppData\Local\Temp\shot.png" \
@@ -34,28 +67,63 @@ Carried forward from Assignment 1, where these facts cost real time to find.
   Write the screenshot to the temp dir, not the repo --- Chrome gets
   access-denied writing into the working directory. Serve over HTTP, never
   `file://` --- a module script won't run from a `file://` origin, and the page
-  will silently render with no JavaScript at all.
+  will silently render with no JavaScript at all. `pnpm preview` is `astro
+  preview`, not a bare `vite preview` --- this repo has no top-level Vite
+  config for a bare `vite preview` to find, so that command fails silently
+  against the wrong server or not at all.
+- On Windows, `execFile("npx", ...)` without `shell: true` cannot launch
+  `npx.cmd` --- Windows resolves `.cmd` files through the shell, the same way
+  `npm run` scripts do internally. This bit `astro-theme-university`'s own
+  pagefind build step (fixed here with a `pnpm patch`, see `patches/`); expect
+  the same failure mode from any other integration or script on this machine
+  that shells out to an `npx`-launched binary without `shell: true`.
 - **Chrome clamps its window to a 500px minimum on this machine**, so
   `--window-size=390,844` does not produce a 390px viewport --- it's the left
   390px of a 500px layout, cropped, which looks exactly like horizontal
   overflow that isn't there. Measure 390px by rendering the page inside a
   390px `iframe` instead of resizing the window, and pass `--hide-scrollbars`
   on that render too, or the iframe's own scrollbar eats into the frame.
-- Headless Chrome barely advances `requestAnimationFrame` --- a `--virtual-time-budget`
-  of many seconds can still only advance animation by about one frame. Anything
-  driven by rAF needs a test-seam hook on `window` that steps the same state
-  the visitor sees, rather than waiting on frames.
-- JSDOM does not execute `<script type="module">`, has no `requestAnimationFrame`,
-  and `canvas.getContext("2d")` returns `null`. It also doesn't model the
-  user-agent/author CSS cascade correctly. Don't contort a test to make JSDOM
-  happy about something it can't see --- keep interactive logic in a DOM-free
-  module you can test directly, assert markup contracts in JSDOM, and check
-  what actually renders in real Chrome at both marked viewports.
-- The `hidden` attribute is only `[hidden] { display: none }` in the user-agent
-  stylesheet, and an author rule at any specificity beats it. An element that
-  sets its own `display` and gets toggled by `hidden` needs the override
-  alongside it (`.thing[hidden] { display: none; }`), or it renders visible
-  while every markup assertion still passes.
+- Headless Chrome barely advances `requestAnimationFrame` --- a
+  `--virtual-time-budget` of many seconds can still only advance animation by
+  about one frame. Anything driven by rAF (a deck transition, an
+  `astromotion` animation) needs a test-seam hook on `window` that steps the
+  same state the visitor sees, rather than waiting on frames.
+- JSDOM does not execute `<script type="module">`, has no
+  `requestAnimationFrame`, and `canvas.getContext("2d")` returns `null`. It
+  also doesn't model the user-agent/author CSS cascade correctly. Don't
+  contort a test to make JSDOM happy about something it can't see --- keep
+  interactive logic in a DOM-free module you can test directly, assert markup
+  contracts in JSDOM, and check what actually renders in real Chrome at both
+  marked viewports.
+- The `hidden` attribute is only `[hidden] { display: none }` in the
+  user-agent stylesheet, and an author rule at any specificity beats it. An
+  element that sets its own `display` and gets toggled by `hidden` needs the
+  override alongside it (`.thing[hidden] { display: none; }`), or it renders
+  visible while every markup assertion still passes. And `hidden` is still the
+  wrong tool when the box has to keep its space: it's `display: none`, so
+  toggling it collapses the element and everything below it moves. To swap one
+  line for another in place, stack both in one grid cell and hide the inactive
+  one with `visibility` plus `aria-hidden`.
+- An invalid CSS value drops the *entire* declaration, not just the invalid
+  part, and the fallback can look plausible. `transform: scale(calc(100cqw /
+  480))` is invalid --- dividing a `<length>` by a bare number gives a
+  `<length>`, and `scale()` takes a `<number>` --- so the whole declaration was
+  dropped and the element fell back to `transform: none`, which at any window
+  size looks like "nothing scaled" rather than "the rule was rejected". A
+  screenshot agreeing with a fix only shows that *some* layout happened, not
+  that yours did; read the computed value back (`getComputedStyle(el)`) when a
+  fix turns on one declaration.
+- When measuring layout in a check, sum `offsetTop`/`offsetLeft` up the
+  `offsetParent` chain rather than using `getBoundingClientRect()`, which
+  includes CSS transforms and makes an animating element look like it moved.
+  But a transformed element is also a containing block, so it re-parents its
+  descendants' `offsetParent` --- drop elements with a transformed ancestor
+  from the comparison rather than papering over the jump with a tolerance.
+- A page with states can be correct in each state and still wrong in the
+  transition between them (a layout that shifts 25px when content changes on
+  first interaction, with both the before and after individually fine). Assert
+  across the change, not just within each state, when a check needs to catch
+  this shape of bug.
 
 ## Keeping PROCESS.md current
 
