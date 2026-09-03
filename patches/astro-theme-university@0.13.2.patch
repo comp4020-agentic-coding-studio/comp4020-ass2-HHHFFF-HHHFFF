@@ -17,3 +17,21 @@ index 7f84b670eb0e4fec3d2d0c91e2b8b6fbb0580801..001d128fde414fb33f893f6748dca5cd
            logger.info("Search index built.");
          }
  
+diff --git a/remark-default-layout.ts b/remark-default-layout.ts
+index 4f411d072c0c9d20bdf72748adafd1dd87c26c24..da60df09f018980eded3a14a5f3b06bfada93495 100644
+--- a/remark-default-layout.ts
++++ b/remark-default-layout.ts
+@@ -18,7 +18,12 @@ const remarkDefaultLayout: Plugin<[RemarkDefaultLayoutOptions], Root> = ({ layou
+     if (!fm || fm.layout) return;
+     const filePath = file.history[0];
+     if (!filePath) return;
+-    if (!filePath.includes(`${sep}pages${sep}`)) return;
++    // Vite/Astro pass this path with forward slashes even on Windows, where
++    // node:path's `sep` is "\\" --- `${sep}pages${sep}` then never matches,
++    // so the layout silently never applies to a single mdx page on this
++    // platform. Normalise to "/" before checking so it works either way.
++    const normalized = filePath.split(sep).join("/");
++    if (!normalized.includes("/pages/")) return;
+     const rel = relative(dirname(filePath), layoutPath);
+     fm.layout = rel.startsWith(".") ? rel : `./${rel}`;
+   };
