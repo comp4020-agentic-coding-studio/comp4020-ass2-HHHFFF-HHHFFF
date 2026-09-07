@@ -134,6 +134,16 @@ find.
   (`Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)`, exit code
   3221226505) --- that crash is the symptom, not the bug; scroll up to the
   `Broken link:` lines for the real message.
+- **A colon-space inside a multi-line *plain* YAML scalar is a parse error**,
+  and this bites constantly in frontmatter because good prose uses colons.
+  `description:` followed by an indented `The method, stated plainly: how
+  to...` fails with `can not read an implicit mapping pair; a colon is missed`
+  (or `a multiline key may not be an implicit key`) --- YAML reads `plainly:`
+  as a key. A single-line value can be quoted, but for a wrapped one use a
+  folded block scalar: `description: >-`. Titles are the other hot spot and
+  need quoting (`title: "Alfa to Zulu: the..."`). `astro check` catches these
+  before the build, so the cheap loop is `pnpm typecheck` rather than a full
+  `pnpm check`, and the error names the exact line and column.
 - **Shiki rewrites `data-language` to the language it fell back to, so a
   custom fence tag does not survive into the HTML.** A ```` ```atc ```` block
   renders as `<pre ... data-language="plaintext">` and logs `[Shiki] The
