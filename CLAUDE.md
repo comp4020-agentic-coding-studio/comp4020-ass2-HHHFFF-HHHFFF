@@ -124,6 +124,24 @@ find.
   first interaction, with both the before and after individually fine). Assert
   across the change, not just within each state, when a check needs to catch
   this shape of bug.
+- The build's link checker resolves internal links, it doesn't just rewrite
+  them for the base path --- `astro-broken-links-checker` fails
+  `astro:build:done` on any link to a route that doesn't exist yet, and a
+  `links:` entry in `src/site-config.ts` puts that link on *every* page at
+  once, so one missing page reports as sixteen broken links. **A nav entry and
+  the page it points at have to land in the same commit.** The failure also
+  aborts the build mid-hook and trips a libuv assertion on this platform
+  (`Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)`, exit code
+  3221226505) --- that crash is the symptom, not the bug; scroll up to the
+  `Broken link:` lines for the real message.
+- `sharp` rasterises SVG here, text included, despite `allowBuilds: sharp:
+  false` in `pnpm-workspace.yaml` --- the prebuilt binary carries librsvg, so
+  the skipped install script doesn't matter (verified: 0.35.3 / libvips 8.18.3,
+  SVG to both PNG and AVIF, and a text render differs from the same SVG with
+  the `<text>` removed rather than silently dropping the glyphs). Artwork can
+  therefore be authored as SVG and rasterised locally to the paths the theme
+  consumes. Keep that render a **local** step whose output is committed: CI
+  never rasterises, so CI never needs the fonts.
 
 ## Keeping PROCESS.md current
 

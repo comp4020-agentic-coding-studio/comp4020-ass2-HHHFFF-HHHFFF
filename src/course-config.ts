@@ -40,23 +40,29 @@ export const slopCourseMetaSchema = z
 
 // The single source of truth for the course record. The generated homepage,
 // navigation label and /api/index.json all read this object.
-// Replace every placeholder value, but keep the shape: the catalogue ingests
-// this API contract when the course is published.
 //
-// The code's last three digits were assigned to this repo when it was
-// provisioned, and no other course in the cohort has them. Change the first
-// digit to your course's level (and `level` to match); keep the other three.
-// STARTER_CONTENT: replace this course record, then remove this comment.
+// Level 1 is a deliberate claim, not a leftover: this is a first-year course
+// with no prerequisites. Reading a transmission closely, and noticing when a
+// protocol has quietly stopped being followed, is foundational literacy for
+// anyone who will work on a safety-critical channel — which by graduation is
+// most of them. Putting it at 3000 level would concede that it is a curiosity.
+//
+// The teaching period is twelve weeks with a two-week break after week 6:
+// weeks 1--6 from Mon 22 Feb, weeks 7--12 from Mon 19 Apr, ending Fri 28 May.
+// Every session, lecture and assessment date sits inside it, which
+// spec/data-integrity.test.ts enforces against the built API.
 export const courseMeta = slopCourseMetaSchema.parse({
   code: "SLOP1126",
-  title: "Course Title Goes Here",
+  title: "Say Again: The Design of a Language That Cannot Be Misheard",
   session: "Semester 1",
   year: 2027,
   level: 1,
   startDate: "2027-02-22",
   endDate: "2027-05-28",
   description:
-    "One concise paragraph explaining what this course is, who it is for, " +
-    "and why somebody would choose to spend a semester taking it.",
-  tags: ["replace me"],
+    "Aviation radio English was engineered so that misunderstanding would be " +
+    "impossible. It isn't. This course reads the phraseology as a designed " +
+    "artefact, and reads the accident record as the evidence of where the " +
+    "design gives way.",
+  tags: ["phraseology", "human factors", "safety design"],
 }) satisfies CourseMetaInput;
