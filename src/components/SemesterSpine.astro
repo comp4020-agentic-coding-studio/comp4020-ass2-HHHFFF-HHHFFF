@@ -1,0 +1,164 @@
+---
+/**
+ * The twelve weeks in one strip: what the lecture argues, what happens on
+ * frequency, and what is due.
+ *
+ * The theme has grids per collection, which answer "what lectures are there".
+ * They cannot answer "what does week 6 consist of", because that spans three
+ * collections. A marker — or a student deciding whether to enrol — reads the
+ * shape of a semester faster than they read twelve cards.
+ *
+ * Ordered list rather than a table: the rows are a sequence, not a data grid,
+ * and a 4-column table at 390px is worse than stacked rows. Both layouts come
+ * from one grid template so nothing reflows when a week gains a due badge.
+ */
+import { getPublishedCollection } from "astro-course-university/content";
+import { withBase } from "astro-theme-university/url";
+import { sessionLabels } from "../site-config";
+
+const [lectures, sessions, assessments] = await Promise.all([
+  getPublishedCollection("lectures"),
+  getPublishedCollection("sessions"),
+  getPublishedCollection("assessments"),
+]);
+
+const TEACHING_WEEKS = Array.from({ length: 12 }, (_, i) => i + 1);
+
+const weeks = TEACHING_WEEKS.map((week) => ({
+  week,
+  lecture: lectures.find((l) => l.data.week === week),
+  session: sessions.find((s) => s.data.week === week),
+  due: assessments.filter((a) => a.data.week === week),
+}));
+---
+
+<ol class="spine" aria-label="The twelve teaching weeks">
+  {
+    weeks.map(({ week, lecture, session, due }) => (
+      <li class="spine-week">
+        <span class="spine-number"><span class="vh">Week </span>{week}</span>
+
+        <span class="spine-lecture">
+          {lecture ? (
+            <a href={withBase(`/lectures/${lecture.id}/`)}>{lecture.data.title}</a>
+          ) : (
+            <em>no lecture</em>
+          )}
+        </span>
+
+        <span class="spine-session">
+          {session ? (
+            <a href={withBase(`/sessions/${session.id}/`)}>{session.data.title}</a>
+          ) : (
+            <em>no {sessionLabels.singular.toLowerCase()}</em>
+          )}
+        </span>
+
+        <span class="spine-due">
+          {due.map((a) => (
+            <a class="spine-badge" href={withBase(`/assessments/${a.id}/`)}>
+              {a.data.title} · {a.data.weight}%
+            </a>
+          ))}
+        </span>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .spine {
+    margin-block: 1.5rem 2rem;
+    padding: 0;
+    list-style: none;
+    border-block-start: 2px solid var(--at-text-secondary);
+  }
+
+  .spine-week {
+    display: grid;
+    /* One template for both layouts. Narrow: number in a fixed first column,
+       everything else stacked beside it. Wide: four columns (see below). */
+    grid-template-columns: 2.5rem 1fr;
+    grid-template-areas:
+      "num lecture"
+      "num session"
+      "num due";
+    gap: 0.15rem 0.75rem;
+    padding-block: 0.7rem;
+    border-block-end: 1px solid var(--at-bg-alt);
+  }
+
+  .spine-number {
+    grid-area: num;
+    align-self: start;
+    color: var(--at-primary);
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The digit is enough for a sighted reader in a column of digits; a screen
+     reader gets the word too. One class, not two — an earlier version had a
+     wrapper and an inner span both doing this, and a missing semicolon in the
+     second silently dropped `height: 1px overflow: hidden` as a single
+     invalid declaration. */
+  .vh {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .spine-lecture {
+    grid-area: lecture;
+    font-weight: 600;
+  }
+
+  .spine-session {
+    grid-area: session;
+    color: var(--at-text-secondary);
+    font-size: 0.95rem;
+  }
+
+  .spine-due {
+    grid-area: due;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .spine-due:empty {
+    display: none;
+  }
+
+  .spine-badge {
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    background: var(--at-bg-alt);
+    color: var(--at-secondary);
+    font-size: 0.8rem;
+    text-decoration: none;
+  }
+
+  .spine-badge:hover,
+  .spine-badge:focus-visible {
+    text-decoration: underline;
+  }
+
+  @media (min-width: 48rem) {
+    .spine-week {
+      grid-template-columns: 2.5rem minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 0.9fr);
+      grid-template-areas: "num lecture session due";
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+
+    /* Keep the column even when a week has nothing due, so the three text
+       columns stay in the same place down the whole strip. */
+    .spine-due:empty {
+      display: block;
+    }
+  }
+</style>

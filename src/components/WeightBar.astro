@@ -1,0 +1,170 @@
+---
+/**
+ * The four assessment components as one bar, plus a legend.
+ *
+ * The bar itself is decorative — role="img" with a label that states the whole
+ * breakdown, because segment widths are not information a screen reader can
+ * use, and colour alone must never be the only carrier. The legend below is
+ * the real content: every component named, weighted, dated and linked.
+ *
+ * The segments carry no text. They used to print "15%" inside themselves,
+ * which was wrong twice over: white on var(--at-primary) is about 3:1, under
+ * AA for text that size, and axe did not flag it only because everything
+ * inside a role="img" is presentational to it. The legend states every number
+ * against the page background, where the contrast is real.
+ *
+ * The total is computed here rather than written down, and
+ * spec/assessment-weights.test.ts fails the suite if it stops being 100. If
+ * it ever does, this renders the true total rather than quietly showing a bar
+ * that does not fill.
+ */
+import { getPublishedCollection } from "astro-course-university/content";
+import { withBase } from "astro-theme-university/url";
+import { formatCourseDate } from "../lib/dates";
+
+const assessments = await getPublishedCollection("assessments");
+const components = assessments.sort((a, b) => a.data.week - b.data.week);
+const total = components.reduce((sum, a) => sum + Number(a.data.weight), 0);
+
+const summary = components
+  .map((a) => `${a.data.title} ${a.data.weight}%`)
+  .join(", ");
+---
+
+<figure class="weights">
+  <div class="weight-bar" role="img" aria-label={`Assessment weighting: ${summary}. Total ${total}%.`}>
+    {
+      components.map((a, i) => (
+        <span
+          class="weight-seg"
+          data-tone={String(i % 4)}
+          style={`flex-grow: ${a.data.weight}`}
+        />
+      ))
+    }
+  </div>
+
+  <figcaption>
+    Four components, {total}% in total{total === 100 ? "" : " — which is wrong, and the spec suite is failing"}.
+  </figcaption>
+
+  <ol class="weight-legend">
+    {
+      components.map((a, i) => (
+        <li>
+          <span class="weight-swatch" data-tone={String(i % 4)} aria-hidden="true"></span>
+          <a href={withBase(`/assessments/${a.id}/`)}>{a.data.title}</a>
+          <span class="weight-meta">
+            {a.data.weight}% · week {a.data.week} · due {formatCourseDate(a.data.due)}
+          </span>
+        </li>
+      ))
+    }
+  </ol>
+</figure>
+
+<style>
+  .weights {
+    margin: 1.75rem 0;
+  }
+
+  .weight-bar {
+    display: flex;
+    /* A fixed height and one border-radius on the container, so a segment
+       never rounds its inner edges against its neighbour. */
+    height: 2.25rem;
+    overflow: hidden;
+    border-radius: 6px;
+    background: var(--at-bg-alt);
+  }
+
+  .weight-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* flex-basis 0 so the grow factors alone decide the split, which makes a
+       segment's width exactly its share of the total. */
+    flex-basis: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  /* Four components, three brand tokens. A fourth tone is mixed from the
+     primary rather than invented, so nothing leaves the house palette.
+     Measured: with `i % 3` the first and fourth segments both came back
+     rgb(185, 125, 28) and were indistinguishable in both the bar and the
+     legend. */
+  .weight-seg[data-tone="0"],
+  .weight-swatch[data-tone="0"] {
+    background: var(--at-primary);
+  }
+
+  .weight-seg[data-tone="1"],
+  .weight-swatch[data-tone="1"] {
+    background: var(--at-secondary);
+  }
+
+  .weight-seg[data-tone="2"],
+  .weight-swatch[data-tone="2"] {
+    background: var(--at-tertiary);
+  }
+
+  .weight-seg[data-tone="3"],
+  .weight-swatch[data-tone="3"] {
+    background: color-mix(in oklab, var(--at-primary) 42%, #14110d);
+  }
+
+  figcaption {
+    margin-block-start: 0.5rem;
+    color: var(--at-text-secondary);
+    font-size: 0.9rem;
+  }
+
+  .weight-legend {
+    margin-block: 1rem 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .weight-legend li {
+    display: grid;
+    grid-template-columns: 0.85rem 1fr;
+    grid-template-areas:
+      "swatch name"
+      ".      meta";
+    gap: 0.1rem 0.6rem;
+    padding-block: 0.4rem;
+    border-block-end: 1px solid var(--at-bg-alt);
+  }
+
+  .weight-swatch {
+    grid-area: swatch;
+    align-self: center;
+    width: 0.85rem;
+    height: 0.85rem;
+    border-radius: 3px;
+  }
+
+  .weight-legend a {
+    grid-area: name;
+    font-weight: 600;
+  }
+
+  .weight-meta {
+    grid-area: meta;
+    color: var(--at-text-secondary);
+    font-size: 0.9rem;
+  }
+
+  @media (min-width: 40rem) {
+    .weight-legend li {
+      grid-template-columns: 0.85rem minmax(0, 1fr) auto;
+      grid-template-areas: "swatch name meta";
+      align-items: baseline;
+    }
+
+    .weight-swatch {
+      align-self: center;
+    }
+  }
+</style>

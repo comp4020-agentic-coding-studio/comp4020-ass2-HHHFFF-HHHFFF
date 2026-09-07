@@ -7,10 +7,13 @@ heroTitle: Assessment
 ---
 
 import AssessmentsGrid from "../../components/AssessmentsGrid.astro";
+import WeightBar from "../../components/WeightBar.astro";
 
 Four components. A small early drill to establish you can operate the thing
 the rest of the course argues about, a transcript analysis, the audit that
 takes the reasoning outside aviation, and ten minutes on a live frequency.
+
+<WeightBar />
 
 They sum to 100, and that is checked rather than asserted:
 `spec/assessment-weights.test.ts` fails the suite if it stops being true. The

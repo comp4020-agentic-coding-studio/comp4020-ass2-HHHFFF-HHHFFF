@@ -3,6 +3,7 @@ import Card from "astro-theme-university/components/Card.astro";
 import CardGrid from "astro-theme-university/components/CardGrid.astro";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import { withBase } from "astro-theme-university/url";
+import SemesterSpine from "../components/SemesterSpine.astro";
 import heroImage from "../assets/images/hero-home.avif";
 import { courseMeta } from "../course-config";
 import { sessionLabels, siteConfig } from "../site-config";
@@ -77,6 +78,15 @@ import { sessionLabels, siteConfig } from "../site-config";
     pressure, or if you have ever watched a handover go wrong and been unable to
     say exactly what went wrong.
   </p>
+
+  <h2>The twelve weeks</h2>
+
+  <p>
+    The lecture argues, the sim session drills, and four times a semester
+    something is due.
+  </p>
+
+  <SemesterSpine />
 
   <h2>How it is marked</h2>
 
