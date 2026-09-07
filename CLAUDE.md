@@ -134,6 +134,33 @@ find.
   (`Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)`, exit code
   3221226505) --- that crash is the symptom, not the bug; scroll up to the
   `Broken link:` lines for the real message.
+- **Shiki rewrites `data-language` to the language it fell back to, so a
+  custom fence tag does not survive into the HTML.** A ```` ```atc ```` block
+  renders as `<pre ... data-language="plaintext">` and logs `[Shiki] The
+  language "atc" doesn't exist, falling back to "plaintext"` --- the build
+  still succeeds, and plaintext monospace is the right look for a transcript,
+  but the built HTML carries no trace of which blocks were transmissions. Parse
+  `dist/api/<collection>/<slug>.json`'s `body` instead: it is the raw markdown
+  with the fence info string intact, and it is a build output rather than
+  source. Note `dist/api/index.json` has neither `body` nor `links` --- only
+  the per-node files do, so a prose or citation check has to read those.
+  The fallback warning is expected and is left in place rather than silenced
+  by editing the fixed `astro.config.ts`.
+- **A bot-challenge host returns 200 for every path, so `curl -o /dev/null -w
+  "%{http_code}"` cannot verify an external citation.** `skybrary.aero` serves
+  a "SuperJS check" interstitial with status 200 to any URL under it ---
+  including `/totally-bogus-path-xyzzy`. Six invented-but-plausible report
+  URLs all "verified" green this way before a known-bad control path came back
+  200 as well and gave the game away; every one of the six was in fact wrong.
+  Verify an external URL with headless Chrome `--dump-dom` and read the
+  `<title>` (the browser passes the challenge; an archived or missing SKYbrary
+  page says so in its title), or for a PDF check `content_type` **and** the
+  `%PDF` magic bytes. Either way, **put a deliberately bogus URL in the same
+  batch** --- that control is the only thing that distinguishes a working
+  sensor from one measuring the interstitial. Some hosts (`faa.gov`) deny
+  headless outright, which is inconclusive rather than negative: cite a host
+  that can be checked instead. `checkExternalLinks: false` in the theme means
+  the build will never catch a dead citation for you.
 - `sharp` rasterises SVG here, text included, despite `allowBuilds: sharp:
   false` in `pnpm-workspace.yaml` --- the prebuilt binary carries librsvg, so
   the skipped install script doesn't matter (verified: 0.35.3 / libvips 8.18.3,
