@@ -134,6 +134,23 @@ find.
   (`Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)`, exit code
   3221226505) --- that crash is the symptom, not the bug; scroll up to the
   `Broken link:` lines for the real message.
+- **Checking a deck at 390px needs two workarounds, and skipping either one
+  reads as "the deck is broken".** astromotion shows a first-visit
+  `.astromotion-help-hint` card, dismissed by any key or click — which
+  headless `--screenshot` cannot send. It sits exactly over the scaled slide
+  band, so the screenshot comes back apparently blank. The iframe is
+  same-origin, so inject `.astromotion-help-hint,
+  .astromotion-whiteboard-hint { display: none !important }` into
+  `contentDocument` on load instead. Second: in an iframe harness, put the
+  `<script>` **after** a `<body>` element — a bare `<style>`+`<script>` at the
+  top of the file is parsed into `<head>`, `document.body` is still null,
+  `appendChild` throws, and you screenshot an empty page with no error
+  anywhere. (`document.write` happens to work, which is why one harness worked
+  and the next didn't.) Once both are handled, reveal renders fine at 390px:
+  `.slides` scales to ~0.30 and letterboxes the 16:9 slide into a ~220px band,
+  complete and unclipped. That is reveal preserving aspect, not a defect —
+  confirm it by reading `.slides` `transform` and the section's
+  `visibility`/`opacity` rather than trusting the image.
 - **A grep over build output is itself a sensor, and it can lie.** Twice now a
   `grep -qiE "error|..."` over `pnpm build` reported "the build complains"
   when the build was in fact completely green, sending me to correct a
