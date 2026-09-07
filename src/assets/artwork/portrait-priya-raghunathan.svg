@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900" role="img">
+  <title>Priya Raghunathan</title>
+
+  <!-- Third of the set. Profile, headset, and a six-rung ladder at the right
+       with the fourth rung picked out in gold: the ICAO rating scale, and
+       Level 4 as the operational minimum. The examiner who still flies. -->
+
+  <rect width="900" height="900" fill="#efe7d8"/>
+  <circle cx="450" cy="430" r="300" fill="#b97d1c"/>
+
+  <!-- shoulders -->
+  <path d="M 150 900 C 175 720, 300 640, 450 640 C 600 640, 725 720, 750 900 Z" fill="#14110d"/>
+
+  <!-- head in profile, facing the viewer's right -->
+  <path d="M 402 198
+           C 508 198, 576 280, 576 386
+           C 576 428, 566 452, 588 470
+           C 604 483, 596 500, 570 502
+           L 540 504
+           C 536 546, 520 562, 470 566
+           C 386 570, 316 496, 314 388
+           C 312 278, 320 198, 402 198 Z" fill="#14110d"/>
+
+  <!-- headset band and single visible cup -->
+  <path d="M 322 366 C 322 232, 566 236, 574 356"
+        fill="none" stroke="#14110d" stroke-width="34" stroke-linecap="round"/>
+  <path d="M 322 366 C 322 232, 566 236, 574 356"
+        fill="none" stroke="#b97d1c" stroke-width="14" stroke-linecap="round"/>
+  <rect x="286" y="346" width="72" height="116" rx="32" fill="#14110d"/>
+  <rect x="301" y="370" width="42" height="70" rx="20" fill="#b97d1c"/>
+
+  <!-- boom mic forward to the mouth -->
+  <path d="M 306 450 C 336 552, 452 580, 528 540"
+        fill="none" stroke="#14110d" stroke-width="16" stroke-linecap="round"/>
+  <ellipse cx="540" cy="534" rx="28" ry="20" fill="#b97d1c"/>
+
+  <!-- the rating ladder: six rungs, the fourth in gold -->
+  <g fill="#14110d">
+    <rect x="700" y="596" width="112" height="14" rx="7"/>
+    <rect x="700" y="552" width="112" height="14" rx="7"/>
+    <rect x="700" y="508" width="112" height="14" rx="7"/>
+    <rect x="700" y="420" width="112" height="14" rx="7" fill-opacity="0.4"/>
+    <rect x="700" y="376" width="112" height="14" rx="7" fill-opacity="0.4"/>
+    <rect x="700" y="332" width="112" height="14" rx="7" fill-opacity="0.4"/>
+    <rect x="694" y="326" width="10" height="290" rx="5"/>
+    <rect x="808" y="326" width="10" height="290" rx="5"/>
+  </g>
+  <rect x="688" y="456" width="136" height="22" rx="11" fill="#14110d"/>
+  <rect x="694" y="461" width="124" height="12" rx="6" fill="#b97d1c"/>
+</svg>

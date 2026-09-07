@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900" role="img">
+  <title>Halvard Sunde</title>
+
+  <!-- Second of the set. Facing the viewer, headset with boom mic, and a
+       radar sweep behind: twenty-two years on one en-route sector, and the
+       controller position in most of the sim sessions. -->
+
+  <rect width="900" height="900" fill="#efe7d8"/>
+  <circle cx="450" cy="430" r="300" fill="#b97d1c"/>
+
+  <!-- radar sweep wedge, behind the figure -->
+  <path d="M 450 430 L 450 130 A 300 300 0 0 1 690 285 Z" fill="#efe7d8" fill-opacity="0.42"/>
+  <g fill="none" stroke="#8a5c13" stroke-opacity="0.5" stroke-width="4">
+    <circle cx="450" cy="430" r="120"/>
+    <circle cx="450" cy="430" r="205"/>
+    <circle cx="450" cy="430" r="290"/>
+  </g>
+
+  <!-- shoulders -->
+  <path d="M 150 900 C 175 720, 300 640, 450 640 C 600 640, 725 720, 750 900 Z" fill="#14110d"/>
+
+  <!-- head, square-on and a little broader -->
+  <path d="M 450 196
+           C 552 196, 612 274, 612 384
+           C 612 486, 546 562, 450 562
+           C 354 562, 288 486, 288 384
+           C 288 274, 348 196, 450 196 Z" fill="#14110d"/>
+
+  <!-- headset: band over the crown, cups at the ears -->
+  <path d="M 292 372 C 292 232, 608 232, 608 372"
+        fill="none" stroke="#14110d" stroke-width="34" stroke-linecap="round"/>
+  <path d="M 292 372 C 292 232, 608 232, 608 372"
+        fill="none" stroke="#b97d1c" stroke-width="14" stroke-linecap="round"/>
+  <rect x="248" y="352" width="70" height="112" rx="30" fill="#14110d"/>
+  <rect x="582" y="352" width="70" height="112" rx="30" fill="#14110d"/>
+  <rect x="262" y="374" width="42" height="68" rx="20" fill="#b97d1c"/>
+  <rect x="596" y="374" width="42" height="68" rx="20" fill="#b97d1c"/>
+
+  <!-- boom mic, swung across to the mouth -->
+  <path d="M 268 452 C 292 566, 372 594, 424 566"
+        fill="none" stroke="#14110d" stroke-width="16" stroke-linecap="round"/>
+  <ellipse cx="436" cy="562" rx="30" ry="21" fill="#b97d1c"/>
+
+  <!-- transmit indicator -->
+  <circle cx="690" cy="640" r="26" fill="#14110d"/>
+  <circle cx="690" cy="640" r="12" fill="#b97d1c"/>
+</svg>

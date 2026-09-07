@@ -6,6 +6,11 @@ description:
 affiliation: Slop University School of Language and Safety
 role: co-lecturer
 email: halvard.sunde@slop.university
+photo: ./halvard-sunde.avif
+photoAlt:
+  An emblematic portrait in flat gold and black on warm cream — a head facing
+  the viewer, wearing a headset with the boom mic swung across, against a gold
+  disc cut by a radar sweep
 contact:
   Ask on frequency during a sim session — that is the fastest route, and the
   answer usually belongs to the whole room. Email works for anything that

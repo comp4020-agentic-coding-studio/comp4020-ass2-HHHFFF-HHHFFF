@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img">
+  <title>SLOP1126 Say Again — link preview card</title>
+
+  <!-- The link-preview card. Dark ground so it holds up as a thumbnail in a
+       feed, with the reserved word from week 4 as the transmission fragment.
+       Re-encoded to JPEG by the theme for og:image. -->
+
+  <rect width="1200" height="630" fill="#14110d"/>
+
+  <!-- gold rule down the left, echoing the site's content rule -->
+  <rect x="0" y="0" width="14" height="630" fill="#b97d1c"/>
+
+  <!-- faint range arcs, bottom right -->
+  <g fill="none" stroke="#b97d1c" stroke-opacity="0.14" stroke-width="3">
+    <circle cx="1180" cy="600" r="170"/>
+    <circle cx="1180" cy="600" r="260"/>
+    <circle cx="1180" cy="600" r="350"/>
+  </g>
+
+  <text x="86" y="132" font-family="Consolas, 'DejaVu Sans Mono', monospace"
+        font-size="34" font-weight="700" fill="#b97d1c" letter-spacing="12">SLOP1126</text>
+
+  <text x="82" y="268" font-family="Georgia, 'DejaVu Serif', serif"
+        font-size="118" font-weight="700" fill="#efe7d8">Say Again</text>
+
+  <text x="86" y="332" font-family="Georgia, 'DejaVu Serif', serif"
+        font-size="35" fill="#c9beac">The design of a language that cannot be misheard</text>
+
+  <!-- the transmission fragment -->
+  <rect x="86" y="404" width="4" height="128" fill="#8a5c13"/>
+  <text x="120" y="446" font-family="Consolas, 'DejaVu Sans Mono', monospace"
+        font-size="27" fill="#6b6154">KLM</text>
+  <text x="220" y="446" font-family="Consolas, 'DejaVu Sans Mono', monospace"
+        font-size="27" fill="#efe7d8">We are now at takeoff.</text>
+  <text x="120" y="502" font-family="Consolas, 'DejaVu Sans Mono', monospace"
+        font-size="27" fill="#6b6154">TWR</text>
+  <text x="220" y="502" font-family="Consolas, 'DejaVu Sans Mono', monospace"
+        font-size="27" fill="#efe7d8">OK. Stand by for takeoff.</text>
+
+  <text x="86" y="580" font-family="Consolas, 'DejaVu Sans Mono', monospace"
+        font-size="21" fill="#8a5c13" letter-spacing="4">SLOP UNIVERSITY · SEMESTER 1</text>
+</svg>

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900" role="img">
+  <title>Noor Abadi</title>
+
+  <!-- Two-ink emblematic portrait, not a likeness: flat gold and black on
+       warm cream, one of a set of three that share a composition so the cast
+       reads as a set. The accent names what the person does rather than what
+       they look like. Here: a spectrogram band across the face, for the
+       phonetician who read voice recordings for investigators. -->
+
+  <rect width="900" height="900" fill="#efe7d8"/>
+  <circle cx="450" cy="430" r="300" fill="#b97d1c"/>
+
+  <!-- shoulders -->
+  <path d="M 150 900 C 175 720, 300 640, 450 640 C 600 640, 725 720, 750 900 Z" fill="#14110d"/>
+
+  <!-- head, three-quarter: mass shifted a little to the viewer's left -->
+  <path d="M 450 200
+           C 545 200, 605 275, 605 380
+           C 605 470, 555 545, 470 560
+           C 375 560, 305 480, 302 380
+           C 300 272, 358 200, 450 200 Z" fill="#14110d"/>
+
+  <!-- spectrogram band: formant stripes across the lower face -->
+  <g fill="#efe7d8">
+    <rect x="330" y="404" width="230" height="12" rx="6"/>
+    <rect x="352" y="432" width="186" height="9" rx="5"/>
+    <rect x="338" y="456" width="212" height="14" rx="7"/>
+    <rect x="366" y="486" width="150" height="8" rx="4"/>
+    <rect x="346" y="506" width="196" height="11" rx="6"/>
+  </g>
+
+  <!-- a single gold stripe: the syllable the finding turned on. Deliberately
+       taller and wider than its neighbours — at portrait-card size a stripe
+       that differs only in colour disappears. -->
+  <rect x="322" y="450" width="244" height="26" rx="13" fill="#b97d1c"/>
+
+  <!-- frequency ticks down the right edge of the disc -->
+  <g fill="#14110d" fill-opacity="0.55">
+    <rect x="700" y="300" width="46" height="7" rx="3"/>
+    <rect x="700" y="330" width="30" height="7" rx="3"/>
+    <rect x="700" y="360" width="56" height="7" rx="3"/>
+    <rect x="700" y="390" width="24" height="7" rx="3"/>
+    <rect x="700" y="420" width="42" height="7" rx="3"/>
+    <rect x="700" y="450" width="34" height="7" rx="3"/>
+  </g>
+</svg>

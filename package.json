@@ -10,6 +10,7 @@
     "typecheck": "astro check",
     "check": "pnpm typecheck && pnpm test",
     "check:evidence": "node scripts/check-evidence.ts",
+    "artwork": "node scripts/render-artwork.ts",
     "test": "pnpm build && vitest run spec",
     "test:template": "vitest run scripts"
   },

@@ -7,6 +7,11 @@ description:
 affiliation: Slop University School of Language and Safety
 role: convenor
 email: noor.abadi@slop.university
+photo: ./noor-abadi.avif
+photoAlt:
+  An emblematic portrait in flat gold and black on warm cream — a head against
+  a gold disc, with a spectrogram's formant stripes banded across the lower
+  face and one of them picked out in gold
 contact:
   Email for anything about the course as a whole — scope, extensions,
   accommodations. Questions about a specific week are better asked in that
