@@ -6,7 +6,7 @@ description:
 week: 1
 date: 2027-02-22
 teachers:
-  - marisol-quaye
+  - noor-abadi
 spec:
   - your development environment runs the course's toolchain
   - you can build and preview the site locally
