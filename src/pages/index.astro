@@ -2,48 +2,116 @@
 import Card from "astro-theme-university/components/Card.astro";
 import CardGrid from "astro-theme-university/components/CardGrid.astro";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
+import { withBase } from "astro-theme-university/url";
 import heroImage from "../assets/images/hero-home.avif";
 import { courseMeta } from "../course-config";
 import { sessionLabels, siteConfig } from "../site-config";
-
-// STARTER_CONTENT: replace the hero artwork and its alt text below, then
-// remove this comment.
 ---
 
 <ContentLayout
   title={`${courseMeta.code}: ${courseMeta.title}`}
   description={courseMeta.description}
   heroImage={heroImage}
-  heroImageAlt="A lecture theatre reduced to flat gold and black shapes, rows of seats sweeping past the frame, in a two-ink risograph print"
+  heroImageAlt="A readback loop drawn as a diagram: two stations, a carrier arcing out from one and back from the other, over a band of clipped waveform, in flat gold and black"
   {...siteConfig}
 >
   <ul class="course-tags" aria-label="Course tags">
     {courseMeta.tags.map((tag) => <li>{tag}</li>)}
   </ul>
 
-  <!-- STARTER_CONTENT: replace the authored page below, then remove this comment. -->
-  <h2>What you will do</h2>
+  <p class="lede">
+    Aviation radio English is a language built on purpose, by identifiable
+    people, to make one kind of mistake impossible. It is worse than ordinary
+    English at nearly everything, and that is the trade.
+  </p>
+
   <p>
-    Say what a student spends their time on — the making, reading, arguing or
-    measuring that fills the weeks. Name the artefact they walk out with.
+    This course reads it as a designed artefact. For every rule: what problem
+    was it for, what was the alternative, what evidence decided it — and does
+    the evidence still hold. The accident record is the other half, and it is
+    not here for drama. It is the only evidence available about where a
+    language engineered against misunderstanding still lets misunderstanding
+    through.
+  </p>
+
+  <h2>What you will do</h2>
+
+  <p>
+    You will be on a simulated frequency in week 1 and every week after it. You
+    will work the controller position with errors planted in the readbacks and
+    find out, as a number, how many you confirm as correct. You will read
+    primary accident reports rather than summaries of them, and map their
+    findings onto the phrases that now exist — the interesting rows are the ones
+    that map onto nothing.
+  </p>
+
+  <p>
+    Then you will take the reasoning somewhere it has not been done for you. The
+    largest piece of work in the course is an
+    <a href={withBase("/assessments/phraseology-audit/")}>audit of a spoken
+      protocol outside aviation</a> — a clinical handover, a signaller's
+    exchange, the
+    conference bridge on a major outage — and a phraseology designed for it,
+    with an honest account of how your own proposal could make things worse.
   </p>
 
   <h2>Who it is for</h2>
+
   <p>
-    Say who this is aimed at and what they need to already know. Be specific
-    enough that someone can rule themselves in or out without emailing you.
+    First-year students, no prerequisites, no aviation background assumed and
+    none rewarded. If you can hear the difference between two similar words you
+    have everything you need on day one.
+  </p>
+
+  <p>
+    It is a level 1 course deliberately. Close-reading a transmission, and
+    noticing when a protocol has quietly stopped being followed, is foundational
+    literacy for anyone who will work on a safety-critical channel — which by
+    graduation is most people. Filing it higher would concede it is a curiosity.
+  </p>
+
+  <p>
+    You should probably not take it if you want to learn to fly: this is a
+    course about language, and it will not help you pass a flight test. You
+    might want it if you build systems where people talk to each other under
+    pressure, or if you have ever watched a handover go wrong and been unable to
+    say exactly what went wrong.
+  </p>
+
+  <h2>How it is marked</h2>
+
+  <p>
+    Four components. A small early drill to establish you can operate the thing
+    being argued about, a transcript analysis, the audit, and ten minutes on a
+    live frequency in week 12. Accent, fluency and speed are not criteria in any
+    of them, and asking for a repeat counts in your favour — the
+    <a href={withBase("/assessments/frequency-check/")}>frequency check page</a>
+    says why at length.
   </p>
 
   <h2>Where to go next</h2>
+
   <CardGrid columns={2}>
+    <Card title="Lectures" href="/lectures/">
+      <p>
+        The twelve weeks, from what the simplex channel takes away to what a
+        designed language cannot fix.
+      </p>
+    </Card>
     <Card title={sessionLabels.plural} href="/sessions/">
-      <p>The weekly schedule and what happens in each teaching session.</p>
+      <p>
+        What actually happens in the hour on frequency, week by week, and what
+        you are expected to walk out with.
+      </p>
     </Card>
     <Card title="Assessment" href="/assessments/">
-      <p>What is marked, what it is worth, and when it is due.</p>
+      <p>Four components, what each is worth, and what none of them mark.</p>
     </Card>
-    <Card title="People" href="/people/">
-      <p>Who teaches the course and how to reach them.</p>
+    <Card title="Glossary" href="/glossary/">
+      <p>
+        The phrases the course holds you to, and the forms it teaches you to
+        hear as wrong.
+      </p>
     </Card>
   </CardGrid>
 </ContentLayout>
@@ -64,5 +132,10 @@ import { sessionLabels, siteConfig } from "../site-config";
     color: var(--at-text-secondary);
     background: var(--at-bg-alt);
     font-size: 0.9rem;
+  }
+
+  .lede {
+    font-size: 1.15rem;
+    line-height: 1.6;
   }
 </style>

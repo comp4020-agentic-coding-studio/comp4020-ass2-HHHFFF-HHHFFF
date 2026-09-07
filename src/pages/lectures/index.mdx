@@ -6,9 +6,20 @@ heroTitle: Lectures
 
 import LecturesGrid from "../../components/LecturesGrid.astro";
 
-Every lecture the course claims to run gets a dated page and a teaching-team
-reference. A course decides how many lectures it needs; one of them carries a
-real deck. `related:` connects lectures to the sessions and assessments they
-feed.
+Twelve lectures, one an argument. They run in an order that matters: the
+doctrine of the reserved word in [week 4](/lectures/week-04/) comes *before*
+the accident that produced it in [week 5](/lectures/week-05/), so that the
+accident arrives as evidence rather than as a moral.
+
+Each week names a different class of failure. Mishearing is only the first
+one, and by [week 6](/lectures/week-06/) the digits are arriving correctly and
+the sentence type is not. Two weeks are a matched pair —
+[week 9](/lectures/week-09/) establishes a safety property nobody designed,
+and [week 10](/lectures/week-10/) is about the technology that removes it.
+
+Where a lecture makes a claim about an accident, it cites the official report.
+That is enforced rather than intended: `spec/phraseology.test.ts` fails the
+suite if a page names an incident without a citation on an investigator's
+host.
 
 <LecturesGrid />

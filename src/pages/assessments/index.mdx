@@ -8,6 +8,29 @@ heroTitle: Assessment
 
 import AssessmentsGrid from "../../components/AssessmentsGrid.astro";
 
-Weights should sum to 100.
+Four components. A small early drill to establish you can operate the thing
+the rest of the course argues about, a transcript analysis, the audit that
+takes the reasoning outside aviation, and ten minutes on a live frequency.
+
+They sum to 100, and that is checked rather than asserted:
+`spec/assessment-weights.test.ts` fails the suite if it stops being true. The
+content schema already verifies that the criteria *within* a weighted
+component sum to 100; nothing in the platform checks across components, so
+this course checks it.
+
+## What none of them mark
+
+Accent, fluency, speed, and how much you sound like a pilot. Not a criterion
+anywhere, and not commented on.
+
+The reasoning is [week 8](/lectures/week-08/)'s: a rating scale for human
+language has consequences that do not fall evenly, and this course is not
+qualified to apply one to a first-year student. The person who assesses that
+professionally teaches week 8 and agrees.
+
+Asking for a repeat counts in your favour. A fluent readback of something you
+did not understand is the failure mode, and the
+[frequency check](/assessments/frequency-check/) is built around exactly that
+distinction.
 
 <AssessmentsGrid />

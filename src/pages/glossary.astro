@@ -1,0 +1,174 @@
+---
+import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
+import { withBase } from "astro-theme-university/url";
+import { deviations, standardPhrases } from "../data/phraseology";
+import { siteConfig } from "../site-config";
+
+const standardCount = standardPhrases.length;
+const deviationCount = deviations.length;
+---
+
+<ContentLayout
+  title="Glossary"
+  description="The phrases this course holds you to, and the forms it teaches you to hear as wrong."
+  {...siteConfig}
+>
+  <p>
+    Two lists. The first is the language: {standardCount} phrases, each with one
+    meaning. The second is {deviationCount} forms you will hear constantly and
+    should be able to name as departures.
+  </p>
+
+  <p>
+    This page is the authority for the <em>standard phraseology</em> criterion
+    on the <a href={withBase("/assessments/readback-drills/")}>readback drills</a>
+    and for step two of the method in
+    <a href={withBase("/lectures/week-11/")}>week 11</a> — name
+    the standard form, or admit you do not have one.
+  </p>
+
+  <p class="glossary-note">
+    It is also the list that <code>spec/phraseology.test.ts</code> checks the
+    site's own transmissions against, so a transmission printed anywhere here
+    as a model cannot contain a form from the second table. That check reads
+    this page's source data, not a copy of it.
+  </p>
+
+  <h2 id="standard">The phrases</h2>
+
+  <div class="table-scroll">
+    <table>
+      <caption>Standard phraseology, with the week that introduces each</caption>
+      <thead>
+        <tr>
+          <th scope="col">Phrase</th>
+          <th scope="col">Means</th>
+          <th scope="col">Week</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          standardPhrases.map((p) => (
+            <tr>
+              <th scope="row"><code>{p.phrase}</code></th>
+              <td>
+                {p.meaning}
+                {p.note && <span class="phrase-note">{p.note}</span>}
+              </td>
+              <td class="week-cell">{p.week ?? "—"}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="deviations">The forms this course teaches you to hear as wrong</h2>
+
+  <p>
+    None of these is a mistake in English. Every one of them is fluent, and
+    most of them are friendly — which is <a
+      href={withBase("/lectures/week-07/")}>week 7</a
+    >'s whole argument. Fluency is not compliance.
+  </p>
+
+  <div class="table-scroll">
+    <table>
+      <caption>Known deviations, what to say instead, and the failure each invites</caption>
+      <thead>
+        <tr>
+          <th scope="col">Form</th>
+          <th scope="col">Say instead</th>
+          <th scope="col">Why it matters</th>
+          <th scope="col">Week</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          deviations.map((d) => (
+            <tr>
+              <th scope="row"><code>{d.form}</code></th>
+              <td>{d.standard}</td>
+              <td>{d.why}</td>
+              <td class="week-cell">{d.week}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="limits">What this list cannot tell you</h2>
+
+  <p>
+    The second table is a <strong>blocklist</strong>, and that is a real limit
+    rather than a rough edge. A transmission contains callsigns, place names,
+    levels and squawks that no glossary could enumerate, so this list can prove
+    a known error is present and can never prove a transmission is fully
+    standard. The check that reads it is named for what it actually does.
+  </p>
+
+  <p>
+    Which means: finding nothing here does not make a transmission correct. It
+    makes it <em>not wrong in any of the {deviationCount} ways this course has
+    taught you</em>. Week 11's method exists because the remaining judgement is
+    yours.
+  </p>
+</ContentLayout>
+
+<style>
+  .glossary-note {
+    padding: 0.75rem 1rem;
+    border-inline-start: 3px solid var(--at-text-secondary);
+    background: var(--at-bg-alt);
+    font-size: 0.95rem;
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+    margin-block: 1.5rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  caption {
+    margin-block-end: 0.75rem;
+    color: var(--at-text-secondary);
+    font-size: 0.9rem;
+    text-align: start;
+  }
+
+  th,
+  td {
+    padding: 0.5rem 0.75rem;
+    border-block-end: 1px solid var(--at-bg-alt);
+    text-align: start;
+    vertical-align: top;
+  }
+
+  thead th {
+    border-block-end-width: 2px;
+    white-space: nowrap;
+  }
+
+  tbody th {
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .week-cell {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .phrase-note {
+    display: block;
+    margin-block-start: 0.35rem;
+    color: var(--at-text-secondary);
+    font-size: 0.9rem;
+  }
+</style>
