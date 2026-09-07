@@ -134,6 +134,22 @@ find.
   (`Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)`, exit code
   3221226505) --- that crash is the symptom, not the bug; scroll up to the
   `Broken link:` lines for the real message.
+- **A grep over build output is itself a sensor, and it can lie.** Twice now a
+  `grep -qiE "error|..."` over `pnpm build` reported "the build complains"
+  when the build was in fact completely green, sending me to correct a
+  docstring that was already right. When the answer decides whether a check is
+  worth keeping, read the verbatim output rather than a boolean derived from
+  it --- and prefer grepping for the *specific* string the failure would print
+  (`Broken link:`, `page(s) built`) over a catch-all like `error`, which
+  matches deprecation notices and stack frames.
+- **The theme renders `slides:` as a real anchor, so the link checker resolves
+  it.** A dangling `slides: /decks/week-99/` therefore fails `pnpm build`
+  (`Broken link: /<base>/decks/week-99/`), *not* only a spec test --- a check
+  written to catch that duplicates the build. What the build genuinely cannot
+  see is a lecture with **no** `slides:` at all: strip it from every lecture
+  and the build is green at 41 pages with no broken links, while the brief's
+  linked-deck requirement is silently unmet. Absence is the gap; a wrong value
+  is already covered.
 - **A colon-space inside a multi-line *plain* YAML scalar is a parse error**,
   and this bites constantly in frontmatter because good prose uses colons.
   `description:` followed by an indented `The method, stated plainly: how

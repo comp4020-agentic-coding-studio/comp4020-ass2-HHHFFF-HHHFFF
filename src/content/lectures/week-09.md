@@ -83,12 +83,18 @@ The crew, uneasy, asked the tower to confirm the runway was clear. The
 controller — correctly, and uselessly — replied that there was nobody on
 runway 28R but them:
 
-```atc
+```atc-verbatim
 ACA759   Tower, just want to confirm, this is Air Canada seven five nine,
          we see some lights on the runway there, can you confirm we're
          cleared to land?
 TWR      There's no one on runway two eight right but you.
 ```
+
+That is quoted from the record rather than offered as a model, and the
+notation says so: `atc-verbatim`, not `atc`. Neither transmission is standard
+phraseology — "just want to confirm", "we see some lights on the runway
+there" — and neither is the point. Marking it as a model would be the mistake
+week 7 warns about in the other direction.
 
 Every word of that is true. It is also an answer to a question the crew were
 not really asking. They were not on 28R.
