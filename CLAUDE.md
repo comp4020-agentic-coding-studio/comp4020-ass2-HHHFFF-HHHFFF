@@ -134,6 +134,13 @@ find.
   (`Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)`, exit code
   3221226505) --- that crash is the symptom, not the bug; scroll up to the
   `Broken link:` lines for the real message.
+- **`gh api` with a leading-slash endpoint fails in Git Bash on this machine.**
+  MSYS path conversion rewrites `/repos/owner/repo/pages` into
+  `C:/Program Files/Git/repos/owner/repo/pages` and `gh` rejects it as an
+  invalid endpoint. Drop the leading slash --- `gh api "repos/$R/pages"` ---
+  which is what the error message itself advises. This bit the Pages
+  `build_type=workflow` call during the ship; `gh repo edit` and
+  `gh workflow run` take no path argument and are unaffected.
 - **Checking a deck at 390px needs two workarounds, and skipping either one
   reads as "the deck is broken".** astromotion shows a first-visit
   `.astromotion-help-hint` card, dismissed by any key or click — which
