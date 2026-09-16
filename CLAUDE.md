@@ -166,6 +166,40 @@ find.
   it --- and prefer grepping for the *specific* string the failure would print
   (`Broken link:`, `page(s) built`) over a catch-all like `error`, which
   matches deprecation notices and stack frames.
+- **`![bg](./assets/x.svg)` in a deck 404s, and the build logs it as a
+  success.** astromotion's remark plugin emits `background-image:
+  url('./assets/x.svg')` on a page served at `/decks/<name>/`, but its asset
+  copier (`src/asset-collector.ts`) writes the file to
+  `dist/src/decks/assets/x.svg` — it preserves the path relative to the
+  *project root*, not to the deck's route. So the slide asks for
+  `/<base>/decks/week-01/assets/x.svg` (404) while the file is served from
+  `/<base>/src/decks/assets/x.svg` (200), and the build prints `Copied 3 deck
+  asset(s) to build output.` on its way past. A slide missing its background
+  is pixel-identical to a slide that was never given one, so the structural
+  deck check, axe and the link checker all stay green. **Put deck artwork in
+  a component and `import` it into the `.deck.mdx`** — astromotion's other
+  supported route for slide content, and the better one anyway: an inline SVG
+  gets `--at-light-grey`, `--at-dark-grey` and the brand golds from deck.css
+  instead of hex values sampled off a screenshot. Also note `_class: impact`
+  paints its own gold fill over the whole slide, so a background image on an
+  impact slide is invisible even when the path is right.
+- **A top-level `--screenshot` can silently drop the hero image, and the blank
+  it leaves looks exactly like artwork that never rendered.** The home page's
+  hero came back as a pure vertical gradient --- every pixel in a row identical
+  left of the title, so not one mark of the drawing on the canvas --- at
+  `--virtual-time-budget=6000` and again at `20000` with
+  `--run-all-compositor-stages-before-draw`. The image was fine: the same page
+  inside the same-origin iframe harness paints it (within-row spread 251 vs 17),
+  `404.html` carries the identical `hero-home.avif` and paints it top-level
+  (163), the people page's AVIF portraits paint top-level, and the hero file
+  loaded standalone paints. Reading the element's own state from inside the page
+  settled it --- `complete: true`, `naturalWidth` non-zero, `object-fit: cover`,
+  `opacity: 1`, a 1885x571 rect. So: **a hero missing from a screenshot of a
+  heavy page is a sensor reading, not a finding.** Confirm it in the iframe
+  harness or by reading `img.complete`/`naturalWidth`/`currentSrc` before
+  touching the artwork, and measure "did the art paint" as within-row spread in
+  a band the title does not reach, not by eye --- the title and scrim alone give
+  a whole-band stddev of 77, which reads as "something is there".
 - **The theme renders `slides:` as a real anchor, so the link checker resolves
   it.** A dangling `slides: /decks/week-99/` therefore fails `pnpm build`
   (`Broken link: /<base>/decks/week-99/`), *not* only a spec test --- a check
