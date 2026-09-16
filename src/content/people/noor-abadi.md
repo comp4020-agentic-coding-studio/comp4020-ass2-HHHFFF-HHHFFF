@@ -12,6 +12,12 @@ photoAlt: >-
   A staff portrait, toned in the site's gold and bronze. A woman in middle age
   with a short dark bob and a dark collared shirt, turned three-quarters to the
   camera and half-smiling, lit from one side against a plain warm wall.
+cardImage: ./noor-abadi-card.avif
+cardImageAlt: >-
+  An illustration of her at work. A woman in her fifties with grey through a
+  short dark bob, studio headphones pushed back off one ear, looking up from
+  an audio-analysis desk; behind her, out of focus, a monitor shows a single
+  glowing waveform trace.
 contact:
   Email for anything about the course as a whole — scope, extensions,
   accommodations. Questions about a specific week are better asked in that

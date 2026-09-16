@@ -1,11 +1,21 @@
 /**
- * Tone the three staff portraits into the site's palette.
+ * Prepare both images each member of staff needs.
  *
  *   node scripts/tone-portraits.ts        # or: pnpm portraits
  *
- * Reads the photographs in src/assets/portraits/ and writes the duotone AVIFs
- * the people collection points at. Same contract as scripts/render-artwork.ts:
- * source committed, output committed, never runs in CI.
+ * This script owns everything written into src/content/people/, and there are
+ * two treatments because the two places an image appears want different things:
+ *
+ * - **The portrait**, on the person's own page. A photograph, reduced to
+ *   luminance and mapped through a duotone ramp built from the site's own
+ *   inks. Square, because that page shows it at its own aspect.
+ * - **The card illustration**, on the people index. An anime illustration of
+ *   that person at work, in its own colour, desaturated a little. 16:9,
+ *   because the card crops to 16:9 exactly (measured: 417x234 at 1880px and
+ *   352x198 at 390px, ratio 1.78 at both).
+ *
+ * Same contract as scripts/render-artwork.ts either way: source committed,
+ * output committed, never runs in CI.
  *
  * ## Why the colour is applied here and not asked for
  *
@@ -51,6 +61,30 @@
  * (73.3) next to the lightest of Noor's (75.0) puts two of the three within
  * two points, and Priya's remaining brightness is a white uniform shirt on a
  * serving first officer, which is the correct thing for her to be wearing.
+ *
+ * ## The card illustrations, and which model could draw an adult
+ *
+ * These keep their own colour, so the only processing is a mild desaturation
+ * to stop them shouting next to a page built from three inks.
+ *
+ * Getting them took four rounds, and the thing that fixed it was not the
+ * prompt. `flux-dev` returned a woman of about twenty every single time the
+ * prompt asked for a woman of about fifty — four attempts, including one that
+ * described the face rather than naming a number (lines, crow's feet, grey
+ * through the hair) — while rendering a man of sixty-five correctly from the
+ * same prompt shape. Handing the *identical* prompt to three models settled
+ * it: `recraft-v3` aged her correctly but put her in a corridor facing away,
+ * and `ideogram-v3-quality` returned exactly what was asked for. All three
+ * were regenerated on it rather than only Noor, because mixing two models'
+ * output reintroduced the defect that started this — that the three did not
+ * read as one set.
+ *
+ * The other thing `ideogram-v3-quality` got right was the screens. Round one
+ * asked for no text with a long emphatic negation and came back with every
+ * monitor full of garbled interface; describing the screens *positively* —
+ * "a single smooth luminous waveform trace, like an oscilloscope on a plain
+ * dark screen" — is what actually emptied them. Worth remembering that these
+ * models do not do "not".
  */
 
 import { existsSync, statSync } from "node:fs";
@@ -67,7 +101,15 @@ const RAMP: ReadonlyArray<readonly [number, readonly [number, number, number]]> 
 
 const SIZE = 900; // matches the starter's portraits, so the wiring is untouched
 const SOURCES = "src/assets/portraits";
+const CARD_SOURCES = "src/assets/portraits/cards";
 const OUT = "src/content/people";
+
+/** Exactly 16:9, so the card's own crop takes nothing off. 2x the 417px box. */
+const CARD_WIDTH = 1600;
+const CARD_HEIGHT = 900;
+
+/** Enough to settle the illustrations next to a three-ink page, no more. */
+const CARD_SATURATION = 0.88;
 
 const people = ["noor-abadi", "halvard-sunde", "priya-raghunathan"] as const;
 
@@ -125,9 +167,33 @@ async function tone(slug: string): Promise<void> {
   console.log(`✓ ${OUT}/${slug}.avif  ${width}x${height}  ${(bytes / 1024).toFixed(0)} kB`);
 }
 
-for (const slug of people) {
-  await tone(slug);
+async function card(slug: string): Promise<void> {
+  const source = resolve(CARD_SOURCES, `${slug}.png`);
+  if (!existsSync(source)) {
+    throw new Error(`missing card source: ${CARD_SOURCES}/${slug}.png`);
+  }
+
+  const out = resolve(OUT, `${slug}-card.avif`);
+  await sharp(source)
+    .resize(CARD_WIDTH, CARD_HEIGHT, { fit: "cover" })
+    .modulate({ saturation: CARD_SATURATION })
+    .avif({ quality: 64 })
+    .toFile(out);
+
+  const { width, height } = await sharp(out).metadata();
+  const bytes = statSync(out).size;
+  if (width !== CARD_WIDTH || height !== CARD_HEIGHT) {
+    throw new Error(
+      `${out} came out ${width}x${height}, expected ${CARD_WIDTH}x${CARD_HEIGHT}`,
+    );
+  }
+  console.log(`✓ ${OUT}/${slug}-card.avif  ${width}x${height}  ${(bytes / 1024).toFixed(0)} kB`);
 }
 
-console.log(`\ntoned ${people.length} portrait(s) from ${SOURCES}/`);
+for (const slug of people) {
+  await tone(slug);
+  await card(slug);
+}
+
+console.log(`\ntoned ${people.length} portrait(s) and ${people.length} card illustration(s)`);
 console.log("commit the output alongside the sources — CI does not run this.");

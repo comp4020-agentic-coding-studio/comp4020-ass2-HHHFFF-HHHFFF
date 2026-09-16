@@ -6,13 +6,12 @@ import { roleLabel, roleRank } from "../lib/people";
 
 const people = await getPublishedCollection("people");
 
-// photoAlt rides the schema's passthrough (definePeopleCollection has no
-// extension point), so it needs a cast out of the generated types.
-function photoAlt(data: unknown): string | undefined {
-  const alt = (data as { photoAlt?: unknown }).photoAlt;
-  return typeof alt === "string" ? alt : undefined;
-}
-
+// The card carries the illustration of this person at work; their own page
+// carries the portrait. Two images with two jobs — scripts/tone-portraits.ts
+// has both treatments and why they differ. The fallback to `photo` means a
+// person added with only a portrait still gets a card with a face on it
+// rather than a blank, and the schema's superRefine guarantees the alt text
+// travels with whichever image ends up being used.
 const visible = people.sort((a, b) => {
   const ra = roleRank(a.data.role);
   const rb = roleRank(b.data.role);
@@ -28,8 +27,10 @@ const visible = people.sort((a, b) => {
         headingLevel="h2"
         title={person.data.title}
         href={`/people/${person.id}/`}
-        image={person.data.photo ?? undefined}
-        imageAlt={photoAlt(person.data)}
+        image={person.data.cardImage ?? person.data.photo ?? undefined}
+        imageAlt={
+          person.data.cardImage ? person.data.cardImageAlt : person.data.photoAlt
+        }
       >
         {roleLabel(person.data.role) && (
           <p>

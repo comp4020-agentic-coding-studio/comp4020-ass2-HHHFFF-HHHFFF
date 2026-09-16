@@ -84,6 +84,11 @@ export const collections = {
           url: z.url().optional(),
           photo: image().optional(),
           photoAlt: z.string().trim().optional(),
+          // The index card and the person's own page show different images on
+          // purpose: the card an illustration of them at work, their page the
+          // portrait. See scripts/tone-portraits.ts for why there are two.
+          cardImage: image().optional(),
+          cardImageAlt: z.string().trim().optional(),
           published: z.coerce.boolean().default(true),
         })
         .superRefine((person, ctx) => {
@@ -92,6 +97,13 @@ export const collections = {
               code: "custom",
               path: ["photoAlt"],
               message: "describe the photo when one is supplied",
+            });
+          }
+          if (person.cardImage && !person.cardImageAlt) {
+            ctx.addIssue({
+              code: "custom",
+              path: ["cardImageAlt"],
+              message: "describe the card illustration when one is supplied",
             });
           }
         }),

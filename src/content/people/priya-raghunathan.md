@@ -12,6 +12,11 @@ photoAlt: >-
   A staff portrait, toned in the site's gold and bronze. A younger woman with
   dark hair tied back, in a white collared shirt with her arms folded, smiling
   at the camera against a warm wall crossed by a soft band of window light.
+cardImage: ./priya-raghunathan-card.avif
+cardImageAlt: >-
+  An illustration of her at work. A woman in a white uniform shirt with gold
+  epaulettes and a headset, in the right-hand seat of an airliner flight deck,
+  turned toward the viewer; beyond the windscreen, daylight over cloud.
 contact:
   Sim sessions first. Rostered away in weeks 3 and 9 — those sessions are
   covered, and email will be slow in those weeks rather than unanswered.

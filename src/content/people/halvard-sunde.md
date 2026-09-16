@@ -12,6 +12,11 @@ photoAlt: >-
   hair and a grey beard, in a dark sweater over an open collar, facing the
   camera square on with an even, unhurried expression against a plain warm
   wall.
+cardImage: ./halvard-sunde-card.avif
+cardImageAlt: >-
+  An illustration of him at work. A grey-haired, grey-bearded man in a dark
+  sweater at a control position, a slim boom microphone at his cheek; behind
+  him, out of focus, a round radar scope throws green light into a dark room.
 contact:
   Ask on frequency during a sim session — that is the fastest route, and the
   answer usually belongs to the whole room. Email works for anything that
