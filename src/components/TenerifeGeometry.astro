@@ -1,0 +1,416 @@
+---
+/**
+ * Los Rodeos on 27 March 1977, in plan: why two 747s were on one runway.
+ *
+ * ## Why this is a figure and not another paragraph
+ *
+ * The week 5 prose has to describe a *spatial* situation — a blocked taxiway,
+ * a full-length backtrack, a second aircraft coming the other way down the
+ * same strip, and two exits whose difference is the angle you have to turn
+ * through. Each of those is a sentence doing a drawing's job. The last one is
+ * the reason the figure exists: the third exit needed a turn of about 148
+ * degrees and the fourth about 45, which is obvious drawn and almost
+ * unsayable.
+ *
+ * So the stub angles are **computed from those two numbers** rather than
+ * eyeballed (see `exitRun`). An earlier version drew all four exits at a
+ * convenient 56 degrees, which made the caption's "148 degrees" a claim the
+ * drawing quietly contradicted.
+ *
+ * ## Why the labels are HTML and the drawing has no text in it
+ *
+ * The site is marked at 390px, where this figure is about 350px wide. Text
+ * set as SVG `<text>` scales with the viewBox: a 28px label in a 1400-unit
+ * box lands at 7px on a phone. So the SVG carries shapes only and every word
+ * is HTML — markers positioned in percentages of the plan (so they track the
+ * feature they point at) but sized against the plan's own width with a rem
+ * floor (so they never grow big enough to hide the drawing they sit on, and
+ * never shrink below legible). The key below is ordinary list text that wraps.
+ * One source, two layouts, same as SemesterSpine.
+ *
+ * Fills come from the `--at-*` tokens, so the figure follows light and dark
+ * rather than baking in the hex values a raster would have.
+ *
+ * ## What it does not claim
+ *
+ * It is schematic, and the caption says so. Relative positions and the two
+ * turn angles are the content; distances are not — a 747 drawn to scale on a
+ * 3,400 m runway is 2% of its length and invisible. The key states what the
+ * reports state, and the page's `links:` carry them.
+ */
+import { AIRLINER_PATHS } from "../lib/airliner";
+
+// --- the drawing's frame of reference -------------------------------------
+// Departure is to the right, so an aircraft backtracking toward the threshold
+// travels left. Every exit angle below is a turn away from *that* heading.
+const RUNWAY_Y = 470;
+const TAXIWAY_Y = 330;
+/** Vertical distance an exit stub covers, runway up to taxiway. */
+const RISE = RUNWAY_Y - TAXIWAY_Y;
+
+/**
+ * Horizontal run of an exit stub for a given turn, in degrees, away from the
+ * heading of an aircraft travelling toward the threshold. A turn of 90 would
+ * leave the runway square; less than 90 carries on the way it was going; more
+ * than 90 doubles back. Positive run means the stub leans back the way the
+ * aircraft came.
+ *
+ * The aircraft heads in -x, so a turn of θ points it along (-cos θ, -sin θ)
+ * and covering RISE vertically costs -RISE / tan θ horizontally. The sign
+ * matters and is easy to drop: without the minus, 148 degrees comes out
+ * leaning *forward* and 45 leaning back — the two exits swap, and the drawing
+ * says the opposite of the key beside it.
+ */
+const exitRun = (turnDegrees: number): number =>
+  -RISE / Math.tan((turnDegrees * Math.PI) / 180);
+
+/** The report's figure for the third exit: almost a reversal. */
+const BACK_TURN = 148;
+/** And for the fourth: a normal high-speed turn-off. */
+const FORWARD_TURN = 45;
+
+/** Where each exit meets the runway, in the order an arriving aircraft meets
+ *  them — which is the order the instruction counted in. */
+const exits = [
+  { x: 960, turn: BACK_TURN },
+  { x: 800, turn: BACK_TURN },
+  { x: 640, turn: BACK_TURN },
+  // Far enough along that the 45-degree stub's overshoot, 52 units wide on
+  // the diagonal, still lands inside the taxiway's left edge rather than
+  // poking a grey sliver out of its corner.
+  { x: 440, turn: FORWARD_TURN },
+];
+
+/** How far a stub runs past each surface before the surface is painted over
+ *  its end. */
+const OVERSHOOT = 30;
+
+const exitPath = ({ x, turn }: { x: number; turn: number }): string => {
+  const run = exitRun(turn);
+  const spill = (run * OVERSHOOT) / RISE;
+  // Overshooting both ends and painting the runway and taxiway on top is what
+  // closes the joint. Mitring four diagonals into two straight edges by hand
+  // is the alternative, and it leaves a visible sliver at every angle.
+  return (
+    `M ${(x - spill).toFixed(1)} ${RUNWAY_Y + OVERSHOOT} ` +
+    `L ${(x + run + spill).toFixed(1)} ${TAXIWAY_Y - OVERSHOOT}`
+  );
+};
+
+/** Markers on the plan. `left`/`top` are percentages of the plan box, so they
+ *  track the drawing at any width. */
+const keys = [
+  {
+    left: "76%",
+    top: "30%",
+    title: "The taxiway was full.",
+    body:
+      "Las Palmas closed after a bomb in the terminal and Los Rodeos took the " +
+      "diversions. Parked widebodies filled the apron and the stretch of " +
+      "parallel taxiway leading out of it.",
+  },
+  {
+    left: "15%",
+    top: "89%",
+    title: "So the runway was the only way out.",
+    body:
+      "The KLM 747 entered at the far end, taxied the full length of the " +
+      "runway against the direction of departure, turned 180 degrees and " +
+      "lined up. That manoeuvre is a backtrack.",
+  },
+  {
+    left: "39%",
+    top: "89%",
+    title: "The Pan Am 747 was still on it.",
+    body:
+      "It had entered behind, backtracking the same strip toward the same " +
+      "end, and was told to leave the runway at the third exit — counted " +
+      "from where it entered.",
+  },
+  {
+    left: "54%",
+    top: "53%",
+    title: "The third exit.",
+    body:
+      `Taking it meant turning back through about ${BACK_TURN} degrees, ` +
+      "which in a 747 is not a turn-off so much as a reversal.",
+  },
+  {
+    left: "26%",
+    top: "53%",
+    title: "The fourth exit.",
+    body:
+      `About ${FORWARD_TURN} degrees, further down, and where the crew were ` +
+      "heading instead. The collision happened before they reached it.",
+  },
+];
+---
+
+<figure class="geometry">
+  <div class="plan">
+    <svg viewBox="0 0 1400 760" role="img" aria-labelledby="geometry-desc">
+      <title id="geometry-desc"
+        >Plan of Los Rodeos: a parallel taxiway blocked by parked aircraft at
+        its apron end, and one runway carrying a 747 lined up for departure at
+        the far end while a second 747 taxis toward it, past the third of four
+        exits.</title
+      >
+
+      <defs>
+        <g id="airliner">
+          {AIRLINER_PATHS.map((d) => <path d={d}></path>)}
+        </g>
+
+        <pattern
+          id="geometry-blocked"
+          width="20"
+          height="20"
+          patternUnits="userSpaceOnUse"
+          patternTransform="rotate(45)"
+        >
+          <line class="blocked-rule" x1="0" y1="0" x2="0" y2="20"></line>
+        </pattern>
+      </defs>
+
+      <!-- Painted bottom-up: the stubs and the apron connector go down first
+           and overshoot, then the surfaces they run between are painted over
+           their ends. -->
+      <g class="pavement-stroke">
+        {exits.map((exit) => <path d={exitPath(exit)}></path>)}
+        <path d={`M 1300 140 L 1300 ${RUNWAY_Y + 40}`}></path>
+      </g>
+
+      <!-- the apron, where the diversions were parked -->
+      <rect class="pavement" x="900" y="30" width="440" height="140" rx="8"></rect>
+
+      <!-- the parallel taxiway, and the stretch of it nearest the apron that
+           the parked aircraft closed -->
+      <rect class="pavement" x="240" y={TAXIWAY_Y - 120} width="1000" height="120" rx="8"></rect>
+      <rect class="blocked" x="1030" y={TAXIWAY_Y - 120} width="210" height="120" rx="8"></rect>
+
+      <!-- the runway -->
+      <rect class="pavement" x="60" y={RUNWAY_Y} width="1280" height="150" rx="4"></rect>
+
+      <!-- threshold markings at the departure end, and the centreline -->
+      <g class="markings">
+        <rect x="76" y={RUNWAY_Y + 16} width="54" height="15"></rect>
+        <rect x="76" y={RUNWAY_Y + 42} width="54" height="15"></rect>
+        <rect x="76" y={RUNWAY_Y + 93} width="54" height="15"></rect>
+        <rect x="76" y={RUNWAY_Y + 119} width="54" height="15"></rect>
+      </g>
+      <line
+        class="centreline"
+        x1="160"
+        y1={RUNWAY_Y + 75}
+        x2="1320"
+        y2={RUNWAY_Y + 75}></line>
+
+      <!-- parked on the apron and spilling onto the taxiway -->
+      <g class="ac-parked">
+        <use href="#airliner" transform="translate(985 100) scale(0.36) rotate(180)"></use>
+        <use href="#airliner" transform="translate(1120 100) scale(0.36) rotate(180)"></use>
+        <use href="#airliner" transform="translate(1255 100) scale(0.36) rotate(180)"></use>
+        <use href="#airliner" transform="translate(1085 270) scale(0.33) rotate(180)"></use>
+        <use href="#airliner" transform="translate(1195 270) scale(0.33) rotate(180)"></use>
+      </g>
+
+      <!-- KLM: backtracked the length of it, turned, and is now facing the
+           direction of departure -->
+      <use
+        class="ac-klm"
+        href="#airliner"
+        transform={`translate(210 ${RUNWAY_Y + 75}) scale(0.62)`}></use>
+
+      <!-- Pan Am: entered behind, past the third exit, still taxiing the
+           other way -->
+      <use
+        class="ac-panam"
+        href="#airliner"
+        transform={`translate(540 ${RUNWAY_Y + 75}) scale(0.62) rotate(180)`}></use>
+    </svg>
+
+    {
+      keys.map((key, i) => (
+        <span class="marker" style={`left: ${key.left}; top: ${key.top};`} aria-hidden="true">
+          {i + 1}
+        </span>
+      ))
+    }
+  </div>
+
+  <ol class="keys">
+    {
+      keys.map((key) => (
+        <li>
+          {/* One element for all the prose. A bare text run beside the
+              <strong> would be wrapped in an *anonymous grid item* of its
+              own and placed in the next cell — which is the 1.5rem number
+              column, so the body set two characters to a line. */}
+          <span>
+            <strong>{key.title}</strong> {key.body}
+          </span>
+        </li>
+      ))
+    }
+  </ol>
+
+  <figcaption>
+    Schematic: relative positions and the two turn angles, not distances or a
+    survey. And nothing in it was visible to anyone in it — hill fog, no ground
+    radar, and a tower that could not see its own runway.
+  </figcaption>
+</figure>
+
+<style>
+  .geometry {
+    margin-block: 2rem;
+    margin-inline: 0;
+  }
+
+  .plan {
+    position: relative;
+    border: 1px solid var(--at-divider);
+    border-radius: var(--at-border-radius);
+    background: var(--at-bg-alt);
+
+    /* Markers size themselves against the plan's own width rather than the
+       viewport's, so the figure keeps working wherever it is put. */
+    container-type: inline-size;
+  }
+
+  .plan svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* Paved surface. Derived from the text colour rather than stated, so the
+     figure follows the light/dark surfaces the rest of the page uses — but
+     mixed against the figure's own background, not `transparent`. A
+     translucent fill let every exit stub show *through* the taxiway it runs
+     into, so each one appeared to overshoot past its far edge; the overshoot
+     is real and deliberate, and an opaque surface is what hides it. */
+  .pavement {
+    fill: color-mix(in oklab, var(--at-text) 16%, var(--at-bg-alt));
+    stroke: color-mix(in oklab, var(--at-text) 28%, var(--at-bg-alt));
+    stroke-width: 2;
+  }
+
+  /* The stubs are lines, not boxes: same paving, given its width by the
+     stroke so one angle change does not mean re-cutting a polygon. */
+  .pavement-stroke {
+    fill: none;
+    stroke: color-mix(in oklab, var(--at-text) 22%, var(--at-bg-alt));
+    stroke-width: 52;
+    stroke-linecap: butt;
+  }
+
+  .blocked {
+    fill: url("#geometry-blocked");
+    stroke: var(--at-secondary);
+    stroke-width: 2;
+  }
+
+  .blocked-rule {
+    stroke: var(--at-secondary);
+    stroke-width: 6;
+  }
+
+  .markings {
+    fill: color-mix(in oklab, var(--at-text) 45%, var(--at-bg-alt));
+  }
+
+  .centreline {
+    stroke: color-mix(in oklab, var(--at-text) 45%, var(--at-bg-alt));
+    stroke-width: 5;
+    stroke-dasharray: 52 40;
+  }
+
+  /* Three inks for three roles: the departing aircraft in the brand gold, the
+     one that should not be there in full-strength text colour, and the parked
+     diversions dropped back so they read as scenery. */
+  .ac-klm {
+    fill: var(--at-primary);
+  }
+
+  .ac-panam {
+    fill: var(--at-text);
+  }
+
+  .ac-parked {
+    fill: color-mix(in oklab, var(--at-text) 42%, var(--at-bg-alt));
+  }
+
+  .marker {
+    position: absolute;
+    display: grid;
+    place-items: center;
+
+    /* 3.1cqw keeps five markers to a fifth of the plan's width between them
+       at any size; the rem floor is what stops them collapsing to unreadable
+       on a phone, and the cap is what stops them covering the aircraft they
+       label on a desktop. */
+    width: clamp(1.05rem, 3.1cqw, 1.6rem);
+    height: clamp(1.05rem, 3.1cqw, 1.6rem);
+    margin: calc(clamp(1.05rem, 3.1cqw, 1.6rem) / -2) 0 0
+      calc(clamp(1.05rem, 3.1cqw, 1.6rem) / -2);
+    border-radius: 999px;
+    background: var(--at-primary);
+    color: var(--at-on-primary);
+    font-size: clamp(0.62rem, 1.8cqw, 0.9rem);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    box-shadow: 0 0 0 2px var(--at-bg-alt);
+  }
+
+  .keys {
+    display: grid;
+    /* One column on a phone, two once there is room, without naming a
+       breakpoint the rest of the page does not know about. */
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    gap: 0.8rem 1.75rem;
+    margin-block: 1.1rem 0.8rem;
+    padding: 0;
+    list-style: none;
+    counter-reset: key;
+  }
+
+  /* Number in its own column rather than a hanging indent: a wrapped line has
+     to align with the line above it, and text-indent cannot promise that once
+     the number's box and the text's first line have different heights. */
+  .keys li {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    gap: 0 0.6rem;
+    counter-increment: key;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--at-text-secondary);
+  }
+
+  /* Generated, so the number cannot fall out of step with the marker order. */
+  .keys li::before {
+    content: counter(key);
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 999px;
+    background: var(--at-primary);
+    color: var(--at-on-primary);
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .keys strong {
+    color: var(--at-text);
+  }
+
+  figcaption {
+    color: var(--at-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+</style>
