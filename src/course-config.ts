@@ -51,6 +51,38 @@ export const slopCourseMetaSchema = z
 // weeks 1--6 from Mon 22 Feb, weeks 7--12 from Mon 19 Apr, ending Fri 28 May.
 // Every session, lecture and assessment date sits inside it, which
 // spec/data-integrity.test.ts enforces against the built API.
+//
+// ## Why the last three digits are 126 and not 000
+//
+// The brief and the starter both say the last three digits "were assigned to
+// this repo when it was provisioned, and no other course in the cohort has
+// them", and that you change only the first digit. Taken literally that
+// makes this code non-compliant: this repo arrived with SLOP1000, so the
+// three digits it arrived with are 000.
+//
+// No allocation was ever delivered, to anyone. Checked, rather than assumed:
+//
+// - the shared template every ass2 repo is generated from
+//   (comp4020-agentic-coding-studio/template-course-site) carries
+//   `code: "SLOP1000"` itself;
+// - the initial commit of all eleven ass2 repos I sampled is SLOP1000,
+//   this one included;
+// - no course plugin skill mentions SLOP, a course code, or a digit at all
+//   (`start` clones the repo and pulls the spec; it never touches
+//   src/course-config.ts), so nothing assigns one at setup either.
+//
+// So 000 is the template default the whole cohort shares, and keeping it is
+// the one choice guaranteed to collide with every classmate who also kept it
+// — the exact thing the rule exists to prevent. The rule cannot be satisfied
+// literally this year, because the premise it rests on is not true.
+//
+// Nine of the ten cohort repos I sampled resolved it the same way and chose
+// their own three digits (562, 628, 976, 258, 418, 972, 171, 428, 203, all
+// distinct); one kept 000 and moved the level digit. 126 is this course's
+// pick, recorded here so it reads as a decision with evidence behind it
+// rather than a line of the spec quietly missed. If the course would rather
+// have SLOP1000, it is a one-line change here plus a re-render of
+// src/assets/artwork/card.svg, which has the code set in it.
 export const courseMeta = slopCourseMetaSchema.parse({
   code: "SLOP1126",
   title: "Say Again: The Design of a Language That Cannot Be Misheard",
