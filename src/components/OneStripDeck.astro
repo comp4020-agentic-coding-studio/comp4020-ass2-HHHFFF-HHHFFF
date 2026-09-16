@@ -1,0 +1,130 @@
+---
+/**
+ * Week 5, on a slide: two aircraft, one strip.
+ *
+ * A deliberate reduction of `TenerifeGeometry.astro`, not a copy of it. That
+ * figure is read on a page, sitting still, with five numbered keys and two
+ * turn angles you can measure. This one is read from the back of a room in
+ * about fifteen seconds, so it drops the exits, the angles and the keys and
+ * keeps the single fact worth that long: the taxiway is full, so both
+ * aircraft are on the runway, facing each other, in fog.
+ *
+ * The airliner glyph is the shared one, so the two drawings cannot drift into
+ * two different aeroplanes.
+ */
+import { AIRLINER_PATHS } from "../lib/airliner";
+
+const RUNWAY_TOP = 300;
+const RUNWAY_MID = 350;
+---
+
+<svg class="strip" viewBox="0 0 1200 440" role="img" aria-labelledby="strip-desc">
+  <title id="strip-desc"
+    >Los Rodeos in plan: the parallel taxiway blocked by parked aircraft at its
+    apron end, and both 747s on the single runway, facing each other.</title
+  >
+
+  <defs>
+    <g id="strip-jet">
+      {AIRLINER_PATHS.map((d) => <path d={d}></path>)}
+    </g>
+    <pattern id="strip-full" width="20" height="20" patternUnits="userSpaceOnUse"
+      patternTransform="rotate(45)">
+      <line class="full-rule" x1="0" y1="0" x2="0" y2="20"></line>
+    </pattern>
+  </defs>
+
+  <!-- the apron, and the only way from it onto the runway -->
+  <rect class="paved" x="830" y="30" width="330" height="96" rx="8"></rect>
+  <rect class="paved" x="1086" y="110" width="58" height={RUNWAY_TOP - 90} rx="6"></rect>
+
+  <!-- the parallel taxiway, and the stretch of it the parked aircraft closed -->
+  <rect class="paved" x="230" y="150" width="790" height="80" rx="8"></rect>
+  <rect class="full" x="790" y="150" width="230" height="80" rx="8"></rect>
+
+  <!-- the runway -->
+  <rect class="paved" x="40" y={RUNWAY_TOP} width="1120" height="100" rx="4"></rect>
+  <g class="markings">
+    <rect x="54" y="312" width="38" height="12"></rect>
+    <rect x="54" y="330" width="38" height="12"></rect>
+    <rect x="54" y="358" width="38" height="12"></rect>
+    <rect x="54" y="376" width="38" height="12"></rect>
+  </g>
+  <line class="centreline" x1="120" y1={RUNWAY_MID} x2="1140" y2={RUNWAY_MID}></line>
+
+  <!-- parked, on the apron and spilling onto the taxiway -->
+  <g class="parked">
+    <use href="#strip-jet" transform="translate(900 78) scale(0.3) rotate(180)"></use>
+    <use href="#strip-jet" transform="translate(1000 78) scale(0.3) rotate(180)"></use>
+    <use href="#strip-jet" transform="translate(1100 78) scale(0.3) rotate(180)"></use>
+    <use href="#strip-jet" transform="translate(860 190) scale(0.27) rotate(180)"></use>
+    <use href="#strip-jet" transform="translate(960 190) scale(0.27) rotate(180)"></use>
+  </g>
+
+  <!-- backtracked the length of it, turned, and now facing the way out -->
+  <use class="klm" href="#strip-jet" transform={`translate(180 ${RUNWAY_MID}) scale(0.5)`}></use>
+
+  <!-- and the one still coming the other way -->
+  <use
+    class="panam"
+    href="#strip-jet"
+    transform={`translate(600 ${RUNWAY_MID}) scale(0.5) rotate(180)`}></use>
+</svg>
+
+<!-- The fog is in the words, not the drawing. Four pale bands at 7% opacity
+     were the brightest thing on the slide — on a dark surface a translucent
+     light fill reads as a lit bar, not as weather, and they cut straight
+     across the runway they were meant to obscure. Rendering it showed that;
+     nothing else would have. -->
+
+
+<style>
+  .strip {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-block-start: 1rem;
+  }
+
+  /* Surface and inks from the deck's own tokens. Paving is mixed against the
+     deck surface rather than made translucent, so the apron connector tucking
+     under the runway stays hidden instead of showing through it. */
+  .paved {
+    fill: color-mix(in oklab, var(--at-light-grey) 22%, var(--at-dark-grey));
+    stroke: color-mix(in oklab, var(--at-light-grey) 32%, var(--at-dark-grey));
+    stroke-width: 2;
+  }
+
+  .full {
+    fill: url("#strip-full");
+    stroke: var(--at-secondary);
+    stroke-width: 2;
+  }
+
+  .full-rule {
+    stroke: var(--at-secondary);
+    stroke-width: 6;
+  }
+
+  .markings {
+    fill: var(--at-tertiary);
+  }
+
+  .centreline {
+    stroke: var(--at-tertiary);
+    stroke-width: 4;
+    stroke-dasharray: 44 34;
+  }
+
+  .parked {
+    fill: color-mix(in oklab, var(--at-light-grey) 34%, var(--at-dark-grey));
+  }
+
+  .klm {
+    fill: var(--at-primary);
+  }
+
+  .panam {
+    fill: var(--at-light-grey);
+  }
+</style>

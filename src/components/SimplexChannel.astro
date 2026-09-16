@@ -1,0 +1,169 @@
+---
+/**
+ * Week 1, on a slide: one carrier, one speaker, and the receiver that closes
+ * when the key opens.
+ *
+ * ## Why this is a component and not `![bg](./assets/simplex.svg)`
+ *
+ * astromotion's background syntax emits `background-image:
+ * url('./assets/x.svg')` on a page served at `/decks/<name>/`, but its asset
+ * copier writes the file to `dist/src/decks/assets/x.svg` — the path the slide
+ * asks for 404s, and the build says "Copied 3 deck asset(s) to build output"
+ * while it does. A slide with a missing background looks exactly like a slide
+ * that was never given one, so nothing anywhere goes red.
+ *
+ * Importing a component into a `.deck.mdx` is astromotion's other supported
+ * route for slide content, and it is the better one here anyway: the drawing
+ * gets the deck's own `--at-*` tokens instead of hex values copied out of a
+ * screenshot, so it cannot drift from the surface it sits on.
+ */
+import { AIRLINER_PATHS } from "../lib/airliner";
+---
+
+<svg class="simplex" viewBox="0 0 1200 470" role="img" aria-labelledby="simplex-desc">
+  <title id="simplex-desc"
+    >One channel carrying one transmission. The transmitting ground station's
+    own receive path is struck through — pressing to transmit closes its
+    receiver — while the aircraft at the other end hears it and has no way to
+    answer until the carrier drops.</title
+  >
+
+  <defs>
+    <g id="simplex-jet">
+      {AIRLINER_PATHS.map((d) => <path d={d}></path>)}
+    </g>
+  </defs>
+
+  <!-- The channel: one rail, because there is one -->
+  <line class="rail" x1="60" y1="150" x2="1140" y2="150"></line>
+
+  <!-- A transmission in progress, occupying all of it -->
+  <line class="carrier" x1="300" y1="150" x2="980" y2="150"></line>
+  <g class="carrier-gap">
+    {
+      [380, 450, 530, 600, 680, 760, 840, 910].map((x) => (
+        <rect x={x} y="142" width="7" height="16"></rect>
+      ))
+    }
+  </g>
+
+  <!-- The keyed ground station. The mast is what makes it read as a radio
+       tower rather than a table lamp; without it the platform on top of the
+       taper is just a shade. -->
+  <g class="ink">
+    <path d="M 272 420 l 14 -100 l 28 0 l 14 100 z"></path>
+    <rect x="256" y="420" width="88" height="18" rx="6"></rect>
+    <path d="M 270 320 l 60 0 l -14 -26 l -32 0 z"></path>
+    <rect x="294" y="248" width="12" height="48"></rect>
+  </g>
+
+  <!-- its transmit path, in the ink of the carrier -->
+  <g class="out">
+    <line x1="390" y1="300" x2="390" y2="182"></line>
+    <path class="head" d="M 390 164 l -13 26 l 26 0 z"></path>
+  </g>
+
+  <!-- and its receive path, cut. Pressing to transmit closes the receiver,
+       which is the whole reason a station cannot know it was stepped on. -->
+  <g class="in-dead">
+    <line x1="210" y1="182" x2="210" y2="300"></line>
+    <path class="head" d="M 210 318 l -13 -26 l 26 0 z"></path>
+  </g>
+  <g class="strike">
+    <line x1="178" y1="208" x2="242" y2="272"></line>
+    <line x1="242" y1="208" x2="178" y2="272"></line>
+  </g>
+
+  <!-- The station hearing it, with no way to say so until the carrier drops -->
+  <use class="ink" href="#simplex-jet" transform="translate(980 380) scale(0.55) rotate(180)"
+  ></use>
+  <g class="in">
+    <line x1="1075" y1="182" x2="1075" y2="300"></line>
+    <path class="head" d="M 1075 318 l -13 -26 l 26 0 z"></path>
+  </g>
+
+  <!-- One label per station, far enough apart that they cannot collide: an
+       earlier version put three at 26px mono within 140 units of each other
+       and two of them overprinted. -->
+  <g class="label">
+    <text class="label-cut" x="300" y="462">KEYED — AND DEAF</text>
+    <text x="1000" y="462">HEARING</text>
+  </g>
+</svg>
+
+<style>
+  .simplex {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-block-start: 1rem;
+  }
+
+  /* Every colour comes from the deck's own tokens — deck.css sets
+     --at-light-grey as the body ink and --at-dark-grey as the surface, and
+     the brand supplies the two golds. An earlier version of this drawing was
+     an SVG file with #0c0c0c sampled off a screenshot baked into it, which is
+     how artwork and theme start to disagree. */
+  .ink {
+    fill: var(--at-light-grey);
+  }
+
+  .rail {
+    stroke: var(--at-tertiary);
+    stroke-width: 5;
+  }
+
+  .carrier {
+    stroke: var(--at-primary);
+    stroke-width: 14;
+    stroke-linecap: round;
+  }
+
+  /* The gaps in the carrier are the surface showing through, so they are the
+     surface colour rather than a lightened gold. */
+  .carrier-gap {
+    fill: var(--at-dark-grey);
+  }
+
+  .out line,
+  .in line,
+  .in-dead line {
+    stroke-width: 10;
+  }
+
+  .out line,
+  .out .head {
+    stroke: var(--at-primary);
+    fill: var(--at-primary);
+  }
+
+  .in line,
+  .in .head {
+    stroke: var(--at-light-grey);
+    fill: var(--at-light-grey);
+  }
+
+  .in-dead line,
+  .in-dead .head {
+    stroke: var(--at-tertiary);
+    fill: var(--at-tertiary);
+  }
+
+  .strike line {
+    stroke: var(--at-primary);
+    stroke-width: 14;
+    stroke-linecap: round;
+  }
+
+  .label text {
+    fill: var(--at-text-secondary, var(--at-light-grey));
+    font-family: var(--at-font-mono, ui-monospace, monospace);
+    font-size: 26px;
+    letter-spacing: 0.08em;
+    text-anchor: middle;
+  }
+
+  .label .label-cut {
+    fill: var(--at-primary);
+  }
+</style>

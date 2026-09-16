@@ -1,0 +1,174 @@
+---
+/**
+ * Week 1, on a slide: how much of a voice a 300 Hz to 3.4 kHz channel keeps.
+ *
+ * The bullet it replaces read "Band-limited: roughly 300 Hz to 3 kHz", which
+ * is a number a first-year student has no way to feel. The drawing is the
+ * same claim with the consequence attached: most of the energy survives and
+ * the cues that separate similar consonants do not.
+ *
+ * ## Why the tick positions are computed
+ *
+ * A frequency axis carrying both 100 Hz and 8 kHz has to be logarithmic, and
+ * a log axis spaced by eye is a lie that looks fine. `atX` is the mapping,
+ * used for the ticks, the band edges and the envelope alike, so there is one
+ * place where the axis is wrong if it is wrong.
+ *
+ * ## Why text is allowed here and not in the site figure
+ *
+ * Reveal scales a whole slide by one transform, so a label set at 26 units
+ * keeps the same relation to the slide's own body text at every viewport —
+ * unlike the lecture page, where the figure's width and the page's font size
+ * change independently and SVG text ends up at 7px on a phone.
+ */
+
+const AXIS_LEFT = 120;
+const AXIS_SPAN = 960;
+const DECADES = Math.log10(8000) - 2;
+
+/** Position on the log frequency axis, 100 Hz at the left, 8 kHz at the right. */
+const atX = (hz: number): number =>
+  AXIS_LEFT + ((Math.log10(hz) - 2) / DECADES) * AXIS_SPAN;
+
+const BASELINE = 320;
+
+/** Speech energy, as an envelope: peaking a little under 500 Hz and falling
+ *  away either side. Illustrative of the shape, not a measurement of anyone's
+ *  voice — which is what the slide says. */
+const ENVELOPE: readonly [number, number][] = [
+  [100, 60],
+  [150, 100],
+  [250, 168],
+  [400, 195],
+  [700, 168],
+  [1200, 128],
+  [2000, 100],
+  [3000, 80],
+  [5000, 54],
+  [8000, 30],
+];
+
+const LOW = 300;
+const HIGH = 3400;
+
+const envelopePath = [
+  `M ${atX(100).toFixed(1)} ${BASELINE}`,
+  ...ENVELOPE.map(([hz, amp]) => `L ${atX(hz).toFixed(1)} ${BASELINE - amp}`),
+  `L ${atX(8000).toFixed(1)} ${BASELINE}`,
+  "Z",
+].join(" ");
+
+const TICKS = [100, LOW, 1000, HIGH, 8000];
+// The unit rides on the first tick rather than sitting at the end of the
+// axis: as a separate label anchored to the right edge it ended up almost
+// touching "8k", which reads as one number.
+const tickLabel = (hz: number): string =>
+  hz === TICKS[0]
+    ? `${hz} Hz`
+    : hz >= 1000
+      ? `${(hz / 1000).toString().replace(/\.0$/, "")}k`
+      : String(hz);
+---
+
+<svg class="band" viewBox="0 0 1200 470" role="img" aria-labelledby="band-desc">
+  <title id="band-desc"
+    >The energy in a speaking voice plotted against frequency on a log axis
+    from 100 Hz to 8 kHz, with the part between 300 Hz and 3.4 kHz picked out
+    as what an aviation radio channel passes and the rest dropped back as what
+    it discards.</title
+  >
+
+  <defs>
+    <clipPath id="band-passband">
+      <rect x={atX(LOW)} y="0" width={atX(HIGH) - atX(LOW)} height={BASELINE}></rect>
+    </clipPath>
+  </defs>
+
+  <!-- The whole voice, in the ink of what is thrown away -->
+  <path class="dropped" d={envelopePath}></path>
+
+  <!-- and the same voice through the window, in the ink of what survives -->
+  <g clip-path="url(#band-passband)">
+    <path class="passed" d={envelopePath}></path>
+  </g>
+
+  <!-- band edges -->
+  <g class="edge">
+    <line x1={atX(LOW)} y1="100" x2={atX(LOW)} y2={BASELINE}></line>
+    <line x1={atX(HIGH)} y1="100" x2={atX(HIGH)} y2={BASELINE}></line>
+  </g>
+
+  <!-- axis and ticks -->
+  <line class="axis" x1="70" y1={BASELINE} x2="1130" y2={BASELINE}></line>
+  <g class="axis">
+    {TICKS.map((hz) => <line x1={atX(hz)} y1={BASELINE} x2={atX(hz)} y2={BASELINE + 18} />)}
+  </g>
+  <g class="tick-label">
+    {TICKS.map((hz) => <text x={atX(hz)} y={BASELINE + 62}>{tickLabel(hz)}</text>)}
+  </g>
+
+  <!-- the span that gets through, named -->
+  <g class="brace">
+    <line x1={atX(LOW)} y1="418" x2={atX(HIGH)} y2="418"></line>
+    <line x1={atX(LOW)} y1="404" x2={atX(LOW)} y2="432"></line>
+    <line x1={atX(HIGH)} y1="404" x2={atX(HIGH)} y2="432"></line>
+  </g>
+  <text class="brace-label" x={(atX(LOW) + atX(HIGH)) / 2} y="464">
+    everything you get
+  </text>
+</svg>
+
+<style>
+  .band {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-block-start: 1rem;
+  }
+
+  /* Tokens, not hex: deck.css owns the surface and body ink, the brand owns
+     the golds. */
+  .dropped {
+    fill: color-mix(in oklab, var(--at-light-grey) 14%, var(--at-dark-grey));
+    stroke: var(--at-tertiary);
+    stroke-width: 3;
+  }
+
+  .passed {
+    fill: var(--at-primary);
+    stroke: var(--at-primary-tint, var(--at-primary));
+    stroke-width: 3;
+  }
+
+  .edge line {
+    stroke: var(--at-light-grey);
+    stroke-opacity: 0.6;
+    stroke-width: 2;
+    stroke-dasharray: 11 9;
+  }
+
+  .axis {
+    stroke: var(--at-tertiary);
+    stroke-width: 3;
+  }
+
+  .tick-label text {
+    fill: var(--at-text-secondary, var(--at-light-grey));
+    font-family: var(--at-font-mono, ui-monospace, monospace);
+    font-size: 28px;
+    text-anchor: middle;
+  }
+
+  .brace line {
+    stroke: var(--at-primary);
+    stroke-width: 4;
+  }
+
+  .brace-label {
+    fill: var(--at-primary);
+    font-family: var(--at-font-mono, ui-monospace, monospace);
+    font-size: 30px;
+    letter-spacing: 0.04em;
+    text-anchor: middle;
+  }
+</style>
