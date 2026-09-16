@@ -1,77 +1,70 @@
 # Process overview
 
-## What I built
+## What I decided a good course is
 
-**SLOP1126 · Say Again** — a first-year course on aviation radio phraseology,
-taught as a designed artefact rather than a list to memorise. Twelve dated
-weeks, four assessments, two decks, a glossary, and a cast of three who
-disagree in print.
+I am not a pilot. I lost many evenings to Microsoft Flight Simulator
+and came out convinced an airliner is among the finest things people have
+built — and that wanting to be up there is a romance most of us keep. What I
+did not expect is that the part I came to care about most is the least romantic
+thing in aviation: the rulebook for what you may say on a frequency. It is made
+of the same stuff as the aeroplane: designed out of alternatives, against
+evidence, so one kind of misunderstanding became impossible. The same
+ingenuity, pointed at language instead of metal.
 
-Aviation English is taught at real universities — Embry-Riddle has a whole
-department of it — but always as proficiency training: get someone who will
-work a frequency to ICAO Level 4. Nobody teaches it to first-years who will
-never fly, as the design history of a language built so misunderstanding would
-be impossible. The niche is the angle, not the subject.
+Hence the position: **a good course makes you feel why something is interesting
+rather than asserting that it is important.** Phraseology is normally taught
+dry — memorise the list, reach ICAO Level 4, pass. Real universities teach it;
+Embry-Riddle has a department. None teach what made me care: *why* each phrase
+is the shape it is. So SLOP1126 asks four questions of every phrase — what
+problem, what alternative, what evidence decided it, does it still hold — and
+three teachers disagree in print
+([`c5e1f64`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-HHHFFF-HHHFFF/commit/c5e1f64)),
+because a settled view deletes the fourth.
 
-## How I got here
+The price: delight only survives if the material is true. An invented
+accident is worth nothing. Hence the harness.
 
-### A notation that made me admit something
+## What I encoded
 
-The obvious way to show transmissions is to print them. Instead the site has
-three fence notations — `atc` is a model, `atc-nonstandard` a
-counter-example, `atc-verbatim` a quote from the record — enforced by
-`spec/phraseology.test.ts`
+Transmissions came first. The obvious thing is to print them for texture.
+Instead each is labelled for the work it does — `atc` a model,
+`atc-nonstandard` a counter-example, `atc-verbatim` a cited quote — and a
+counter-example must *contain* a known deviation, so the label can never be an
+exemption
 ([`22c85de`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-HHHFFF-HHHFFF/commit/22c85de)).
-A counter-example must *contain* a known deviation, so the label cannot become
-a blanket exemption; a verbatim quote must sit on a page citing an
-investigator.
+It caught its author: week 9's Air Canada 759 exchange was tagged a model, and
+is neither.
 
-That forced an admission. Week 9's Air Canada 759 exchange was tagged `atc`. It
-is neither standard nor a model: it is quoted from an NTSB report, and its
-point is that a true answer was useless. Relabelling it was the notation doing
-its job on its author.
-
-### A sensor that returned 200 for everything
-
-I wrote six plausible SKYbrary citation URLs and checked them with `curl -o
-/dev/null -w "%{http_code}"`. All 200. Green.
-
-The obvious move was to ship. Instead I put a deliberately bogus path in the
-same batch — `/totally-bogus-path-xyzzy` — and it returned 200 too. The host
-serves a JS bot-challenge with status 200 for any path: the check had been
-measuring the interstitial. **All six URLs were wrong.** I re-verified every
-citation in headless Chrome against a known-bad control; the rule is in
-`CLAUDE.md`
+Then the breakthrough, which was a failure. I had the agent produce six
+SKYbrary citations and checked them with `curl -w "%{http_code}"`. All 200. The
+obvious move was to accept. Instead I dropped a deliberately bogus path into
+the same batch; it came back 200 too — the host answers every URL with a
+bot-challenge page. **All six were invented.** What changed was not the URLs but
+what I accept as a sensor: the rule went into `CLAUDE.md`, and the check
+asserts *provenance*, not liveness — a network check here
+is worse than none
 ([`01eb9cf`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-HHHFFF-HHHFFF/commit/01eb9cf)).
-It also shaped the check, which asserts a citation's *provenance* rather than
-its liveness: a network check here would be worse than none.
 
-### Breaking a check disproved its reason for existing
-
-`spec/deck-links.test.ts` was written to catch a dangling `slides:` path, since
-the schema only shape-validates it. Making it red showed a bogus path *also*
-fails `pnpm build`: the theme renders `slides:` as an anchor and the link
-checker resolves it. The gap did not exist.
-
-I rewrote it rather than keep a check duplicating the build. The real gap is
-absence: strip `slides:` from every lecture and the build is green at 41 pages,
-no broken links, the brief's linked-deck requirement unmet
-([`22c85de`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-HHHFFF-HHHFFF/commit/22c85de)).
-
-### A drawing that contradicted its own caption
-
-Week 5's figure exists for one fact: the third exit at Los Rodeos needed a turn
-of about 148°, the fourth about 45° — obvious drawn, unsayable. The first
-version drew all four at a convenient 56° while the caption said 148, and grey
-diagonals look correct at any angle. Nothing sees it: no build reads path
-geometry, axe treats `role="img"` as presentational.
-
-The obvious fix was the angle. Instead the drawing computes its stubs *from*
-the two numbers, and a check reads the angles back out of the rendered SVG and
-compares them to **the degrees the prose states** — not a constant, which would
-let figure and caption drift apart in step and stay green
+After that I asked the agent for artefacts and the harness whether to keep
+them. It ran both ways. Week 5's figure came back drawing all four runway exits
+at 56° while its caption said 148°; it now derives the angles from those
+numbers, and a check compares them to **the degrees the prose states** rather
+than a constant, which would let the two drift together and stay green
 ([`a2069c0`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-HHHFFF-HHHFFF/commit/a2069c0)).
-Proven red both ways: flipping the sign reported `{ fourth: '135', third: '32'
-}`; editing the prose to 150 failed the other way.
+Then the reverse: the agent told me, on eleven consistent samples, that my
+course code breached the spec. I refused it: the digits are assigned in the
+template repo, and that commit was there seven seconds after provisioning —
+eleven agreeing samples of the wrong quantity
+([`745d21e`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-HHHFFF-HHHFFF/commit/745d21e)).
 
-A course teaching close-reading cannot hand students a diagram that lies.
+## What I left out
+
+No check on prose or voice, the thing I care about most. A green light on "not
+dry, not mechanical" would be the most expensive lie in the repo, so the
+quality this course lives or dies on is unguarded.
+
+No check that every lecture carries a deck: one is required, twelve would
+manufacture ten thin ones. No visual regression either — pinning pixels
+freezes a design I am still arguing with, so where layout had to hold I
+measured it instead
+([`4759ae9`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-HHHFFF-HHHFFF/commit/4759ae9)).
