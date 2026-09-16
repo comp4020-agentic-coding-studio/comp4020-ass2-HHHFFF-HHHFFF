@@ -12,6 +12,8 @@ related:
   - sessions/02-alphabet-under-noise
 ---
 
+import SpellingAlphabet from "../../components/SpellingAlphabet.astro";
+
 Everybody knows the alphabet. Almost nobody knows it was **tested**.
 
 The version in use today was adopted by ICAO in the mid-1950s after several
@@ -20,6 +22,8 @@ for. That is the interesting part: not the list, but the fact that a list can
 be wrong, and that somebody went and measured which words survived a noisy
 channel and a speaker who had learned them phonetically rather than as English
 words.
+
+<SpellingAlphabet />
 
 ## What the words have to do
 
@@ -58,8 +62,8 @@ prints a misspelling on purpose. Design decisions leave fossils.
 ## Numbers had the same problem, and a worse one
 
 Digits are spoken individually — `two seven left`, not *twenty-seven left* —
-because place value is exactly the redundancy the channel eats. But two digits
-needed changing outright:
+because place value is exactly the redundancy the channel eats. But three
+digits needed respelling outright:
 
 - **`NINER`** for 9, because *nine* and the German *nein* collide, and because
   a clipped *nine* is close to *five*.

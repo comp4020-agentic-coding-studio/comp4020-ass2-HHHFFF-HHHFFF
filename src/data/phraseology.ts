@@ -281,3 +281,63 @@ export const deviations: Deviation[] = [
 export function findDeviations(text: string): Deviation[] {
   return deviations.filter((d) => d.pattern.test(text));
 }
+
+/** One letter of the spelling alphabet. */
+export interface SpellingWord {
+  letter: string;
+  word: string;
+  /** Set where the word is deliberately misspelled in English, with the
+   *  reason. Week 2's argument turns on these two. */
+  deliberate?: string;
+}
+
+/**
+ * The ICAO spelling alphabet, A to Z.
+ *
+ * Week 2 is titled "Alfa to Zulu" and argues about acoustic distance, about
+ * `NOVEMBER` surviving the loss of its first syllable, and about two words
+ * being misspelled on purpose — and until this existed the site never
+ * actually showed the twenty-six words. A course whose lecture title promises
+ * A to Z should be able to produce A to Z.
+ *
+ * `deliberate` carries only the two the lecture makes its case from. Nothing
+ * here claims a pronunciation respelling beyond those two: ICAO Annex 10 also
+ * gives spoken forms for several letters, and printing a half-remembered set
+ * of them would be the invented-citation failure in another costume.
+ */
+export const spellingAlphabet: SpellingWord[] = [
+  { letter: "A", word: "ALFA", deliberate: "*Alpha* lets a French or Spanish reader take the ph as /p/." },
+  { letter: "B", word: "BRAVO" },
+  { letter: "C", word: "CHARLIE" },
+  { letter: "D", word: "DELTA" },
+  { letter: "E", word: "ECHO" },
+  { letter: "F", word: "FOXTROT" },
+  { letter: "G", word: "GOLF" },
+  { letter: "H", word: "HOTEL" },
+  { letter: "I", word: "INDIA" },
+  { letter: "J", word: "JULIETT", deliberate: "*Juliet* invites a French speaker to drop the final t." },
+  { letter: "K", word: "KILO" },
+  { letter: "L", word: "LIMA" },
+  { letter: "M", word: "MIKE" },
+  { letter: "N", word: "NOVEMBER" },
+  { letter: "O", word: "OSCAR" },
+  { letter: "P", word: "PAPA" },
+  { letter: "Q", word: "QUEBEC" },
+  { letter: "R", word: "ROMEO" },
+  { letter: "S", word: "SIERRA" },
+  { letter: "T", word: "TANGO" },
+  { letter: "U", word: "UNIFORM" },
+  { letter: "V", word: "VICTOR" },
+  { letter: "W", word: "WHISKEY" },
+  { letter: "X", word: "XRAY" },
+  { letter: "Y", word: "YANKEE" },
+  { letter: "Z", word: "ZULU" },
+];
+
+/** The three digits week 2 says were respelled outright. Deliberately not the
+ *  full set of spoken digit forms — only what the lecture argues from. */
+export const respelledDigits: { digit: string; spoken: string }[] = [
+  { digit: "3", spoken: "TREE" },
+  { digit: "4", spoken: "FOWER" },
+  { digit: "9", spoken: "NINER" },
+];

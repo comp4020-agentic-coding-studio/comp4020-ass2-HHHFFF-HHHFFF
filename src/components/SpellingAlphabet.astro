@@ -1,0 +1,135 @@
+---
+/**
+ * The twenty-six words, on the page that argues about them.
+ *
+ * Week 2 is titled "Alfa to Zulu" and spends six hundred words on acoustic
+ * distance, on `NOVEMBER` surviving the loss of its first syllable, and on two
+ * words being misspelled on purpose — and the site never showed the alphabet.
+ * A lecture whose title promises A to Z should produce A to Z.
+ *
+ * ## Why a grid and not a table
+ *
+ * The glossary's tables are for looking a thing up: three or four columns, one
+ * row per entry, read across. This is the opposite — twenty-six pairs of two
+ * short strings, read as a *set*, because the lecture's claim is about the
+ * words' relation to each other (how far apart BRAVO, CHARLIE, DELTA and ECHO
+ * are pushed). A 26-row table buries that; an auto-fitting grid puts them in
+ * sight of one another and reflows to a single column on a phone without a
+ * breakpoint of its own.
+ *
+ * ## The marked pair
+ *
+ * ALFA and JULIETT carry the lecture's argument, so they are marked rather
+ * than left for the reader to spot. The mark is the same dotted-underline
+ * idiom the glossary uses for a form to notice, because in both places it
+ * means the same thing: look at this one, it is not what you expect.
+ *
+ * The *reason* is deliberately not in the cell. The first draft printed it
+ * there, and rendering showed two costs: the note made its own row half again
+ * as tall as the other four, so a 26-cell grid read as lopsided with five
+ * empty tall cells beside ALFA — and worse, it said the same thing as the
+ * section immediately below, which is titled "The two misspellings" and
+ * explains both at length. The mark points; the prose explains. Duplicating
+ * the prose inside the figure is how a page starts arguing with itself.
+ */
+import { respelledDigits, spellingAlphabet } from "../data/phraseology";
+---
+
+<figure class="alphabet">
+  <ol class="grid" aria-label="The ICAO spelling alphabet, A to Z">
+    {
+      spellingAlphabet.map((entry) => (
+        <li class={entry.deliberate ? "cell marked" : "cell"}>
+          <span class="letter">{entry.letter}</span>
+          <span class="word">{entry.word}</span>
+        </li>
+      ))
+    }
+  </ol>
+
+  <p class="digits">
+    <span>And the three digits respelled outright: </span>
+    {
+      respelledDigits.map((d, i) => (
+        <span>
+          {i > 0 ? ", " : ""}
+          <strong>{d.digit}</strong> as <code>{d.spoken}</code>
+        </span>
+      ))
+    }
+    <span>.</span>
+  </p>
+
+  <figcaption>
+    Two of the twenty-six are marked, because they are misspelled in English on
+    purpose. Both misspellings are about somebody else's mouth rather than your
+    own — which is the next section.
+  </figcaption>
+</figure>
+
+<style>
+  .alphabet {
+    margin-block: 2rem;
+    margin-inline: 0;
+  }
+
+  .grid {
+    display: grid;
+    /* Reflows from a single column on a phone up to six or seven at desktop
+       without naming a breakpoint. 7rem fits the longest word, NOVEMBER, at
+       the body size. */
+    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .cell {
+    display: grid;
+    grid-template-columns: 1.4rem 1fr;
+    gap: 0 0.5rem;
+    align-items: baseline;
+    padding: 0.4rem 0.55rem;
+    border: 1px solid var(--at-divider);
+    border-radius: var(--at-border-radius);
+    background: var(--at-bg-alt);
+  }
+
+  .letter {
+    color: var(--at-text-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .word {
+    font-family: var(--at-font-mono, ui-monospace, monospace);
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+  }
+
+  /* Same idiom as the glossary's deviation forms: in both places the mark
+     means "look at this one, it is not what you expect". */
+  .marked {
+    border-color: color-mix(in oklab, var(--at-secondary) 45%, transparent);
+  }
+
+  .marked .word {
+    color: var(--at-secondary);
+    text-decoration: underline dotted;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .digits {
+    margin-block: 1rem 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  figcaption {
+    color: var(--at-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+</style>
