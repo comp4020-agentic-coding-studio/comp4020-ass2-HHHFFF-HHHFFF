@@ -192,10 +192,20 @@ find.
   reads as "the deck is broken".** astromotion shows a first-visit
   `.astromotion-help-hint` card, dismissed by any key or click — which
   headless `--screenshot` cannot send. It sits exactly over the scaled slide
-  band, so the screenshot comes back apparently blank. The iframe is
-  same-origin, so inject `.astromotion-help-hint,
+  band, so the screenshot comes back apparently blank. Inject
+  `.astromotion-help-hint,
   .astromotion-whiteboard-hint { display: none !important }` into
-  `contentDocument` on load instead. Second: in an iframe harness, put the
+  `contentDocument` on load instead — but **the harness has to be served from
+  the same origin as the page for that to do anything.** A harness opened over
+  `file://` around an iframe on `http://localhost` is cross-origin:
+  `contentDocument` is `null`, the load handler throws, and the injection
+  silently does not happen while the screenshot still comes out looking
+  plausible. (This note previously asserted the iframe was same-origin, which
+  was wrong; it went unnoticed because a screenshot does not need access and
+  only reading the frame does.) Copy the harness into `dist/` and load it from
+  `localhost` — which is also the only way to *measure* through the frame, and
+  how the people card's 16:9 box was established. Second: in an iframe
+  harness, put the
   `<script>` **after** a `<body>` element — a bare `<style>`+`<script>` at the
   top of the file is parsed into `<head>`, `document.body` is still null,
   `appendChild` throws, and you screenshot an empty page with no error
@@ -332,6 +342,46 @@ find.
   exactly like a server that failed to start; the log file still only contains
   the echoed command line. Wait and retry before concluding anything, and read
   `astro preview status` rather than the absence of log output.
+
+## The course image proxy
+
+`POST https://strproxy.comp.anu.edu.au/api/images/generations`, OpenAI-shaped,
+authenticated with the **same** credential as `ANTHROPIC_AUTH_TOKEN` (that env
+var's `ANTHROPIC_BASE_URL` is this host; `OPENAI_API_KEY` is a different key
+and gets `401 invalid bearer`). Body is `{model, prompt, size?, n?}`; the
+response is `{created, data:[{url}]}` with temporary Replicate URLs, so
+download immediately.
+
+- **Read the constraints off a 400 rather than guessing — rejections are
+  free.** Models: `flux-1.1-pro`, `flux-dev`, `flux-schnell`,
+  `ideogram-v3-quality`, `recraft-v3`. Sizes: **only** `1024x1024`,
+  `1024x1792`, `1792x1024`. `n` is 1--4, except `ideogram-v3-quality` which
+  caps at 1 per call.
+- **`ideogram-v3-quality` follows a prompt that `flux-dev` overrides.**
+  `flux-dev` returned a woman of about twenty on four separate attempts at a
+  prompt asking for a woman of about fifty --- including one describing the
+  face rather than naming an age --- while rendering an elderly man correctly
+  from the same prompt shape. The identical prompt through
+  `ideogram-v3-quality` came back right first time. When a generation keeps
+  missing one stated attribute, **change the model before rewriting the
+  prompt again**, and compare models on one unchanged prompt so the variable
+  is the model.
+- **None of these models do negation.** "Absolutely no text, no letters, no
+  numbers, no logos, no signage anywhere in the frame" produced monitors full
+  of garbled interface text. Describing the thing positively --- "a single
+  smooth luminous waveform trace, like an oscilloscope on a plain dark
+  screen" --- emptied them. Say what should be there, not what shouldn't.
+- **Non-ASCII in a prompt fails the whole request.** An em-dash in the JSON
+  body comes back `400 {"detail":"There was an error parsing the body"}` from
+  this shell. Keep prompts ASCII.
+- `GET api/me` returns `anu_id`, `current_week_spend`, `max_budget` (200) and
+  `total_spend` --- useful, and the only budget reading available. **Image
+  generation does not show up in `current_week_spend`**: it did not move
+  across nine images with a 25-second settle, while moving steadily from
+  model usage the whole time. So per-image cost is *not* measurable this way,
+  and the counter is a model-usage counter. An earlier note in this session
+  claiming a measured \$0.10 per image does not reproduce and should not be
+  relied on.
 
 ## Keeping PROCESS.md current
 
