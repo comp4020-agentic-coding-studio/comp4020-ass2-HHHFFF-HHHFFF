@@ -8,10 +8,10 @@ affiliation: Slop University School of Language and Safety
 role: tutor
 email: priya.raghunathan@slop.university
 photo: ./priya-raghunathan.avif
-photoAlt:
-  An emblematic portrait in flat gold and black on warm cream — a head in
-  profile wearing a headset, beside a six-rung ladder with the fourth rung
-  marked in gold
+photoAlt: >-
+  A staff portrait, toned in the site's gold and bronze. A younger woman with
+  dark hair tied back, in a white collared shirt with her arms folded, smiling
+  at the camera against a warm wall crossed by a soft band of window light.
 contact:
   Sim sessions first. Rostered away in weeks 3 and 9 — those sessions are
   covered, and email will be slow in those weeks rather than unanswered.

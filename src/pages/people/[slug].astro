@@ -1,7 +1,9 @@
 ---
+import { Image } from "astro:assets";
 import { render } from "astro:content";
 import { getPublishedCollection } from "astro-course-university/content";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
+import { roleLabel } from "../../lib/people";
 import { siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
@@ -12,15 +14,7 @@ export async function getStaticPaths() {
 const { person } = Astro.props;
 const { Content } = await render(person);
 
-// Map the role enum (convenor|tutor|guest|other) to display labels rather than
-// rendering the raw lowercase value.
-const roleLabels: Record<string, string> = {
-  convenor: "Convenor",
-  tutor: "Tutor",
-  guest: "Guest lecturer",
-  other: "",
-};
-const roleLabel = person.data.role ? roleLabels[person.data.role] : undefined;
+const role = roleLabel(person.data.role);
 // Astro's generated type does not retain the image/alt refinement relationship,
 // so narrow the alt at the rendering boundary as well.
 const rawPhotoAlt = (person.data as { photoAlt?: unknown }).photoAlt;
@@ -30,45 +24,110 @@ const photoAlt = typeof rawPhotoAlt === "string" ? rawPhotoAlt : "";
 const description = person.data.description;
 ---
 
-<ContentLayout
-  title={person.data.title}
-  description={description}
-  heroImage={person.data.photo ?? undefined}
-  heroImageAlt={photoAlt}
-  {...siteConfig}
->
-  <dl>
-    {roleLabel && (
-      <>
-        <dt>Role</dt>
-        <dd>{roleLabel}</dd>
-      </>
-    )}
-    {person.data.affiliation && (
-      <>
-        <dt>Affiliation</dt>
-        <dd>{person.data.affiliation}</dd>
-      </>
-    )}
-    {person.data.email && (
-      <>
-        <dt>Email</dt>
-        <dd>
-          <a href={`mailto:${person.data.email}`}>{person.data.email}</a>
-        </dd>
-      </>
-    )}
-    {person.data.url && (
-      <>
-        <dt>Web</dt>
-        <dd>
-          <a href={person.data.url}>{person.data.url}</a>
-        </dd>
-      </>
-    )}
-    <dt>Contact</dt>
-    <dd>{person.data.contact}</dd>
-  </dl>
+{/*
+  The portrait is deliberately *not* passed as `heroImage`.
+
+  It used to be, and it worked while the portraits were geometric SVGs: the
+  hero is a full-bleed band about 350px tall, so a 900x900 source is cropped
+  to a horizontal strip through its middle, and a strip through the middle of
+  a gold disc still reads as an intentional band of colour. A strip through
+  the middle of a face reads as a macro shot of one eye and half a moustache.
+  Rendering the page is what showed this; the build was green either way.
+
+  Everywhere else on the site the hero band carries artwork drawn for that
+  aspect (the home page's 2560x1086 readback loop), and the lecture and
+  session pages have no hero at all. So the portrait becomes what it actually
+  is — a square portrait beside the contact details — and these pages now
+  open the same way every other content page does.
+*/}
+<ContentLayout title={person.data.title} description={description} {...siteConfig}>
+  <div class="person-head">
+    <div class="person-head-grid">
+      {
+        person.data.photo && (
+          <Image
+            class="portrait"
+            src={person.data.photo}
+            alt={photoAlt}
+            width={420}
+            height={420}
+            densities={[1, 2]}
+          />
+        )
+      }
+      <dl>
+        {role && (
+          <>
+            <dt>Role</dt>
+            <dd>{role}</dd>
+          </>
+        )}
+        {person.data.affiliation && (
+          <>
+            <dt>Affiliation</dt>
+            <dd>{person.data.affiliation}</dd>
+          </>
+        )}
+        {person.data.email && (
+          <>
+            <dt>Email</dt>
+            <dd>
+              <a href={`mailto:${person.data.email}`}>{person.data.email}</a>
+            </dd>
+          </>
+        )}
+        {person.data.url && (
+          <>
+            <dt>Web</dt>
+            <dd>
+              <a href={person.data.url}>{person.data.url}</a>
+            </dd>
+          </>
+        )}
+        <dt>Contact</dt>
+        <dd>{person.data.contact}</dd>
+      </dl>
+    </div>
+  </div>
 
   <Content />
 </ContentLayout>
+
+<style>
+  /* An outer container plus an inner grid, because an element cannot query
+     its own container. */
+  .person-head {
+    container-type: inline-size;
+  }
+
+  .person-head-grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  /* 30rem is where the content column is wide enough that a 13rem portrait
+     still leaves the definition list a readable measure. Below it the two
+     stack, which is also what happens at 390px. */
+  @container (min-width: 30rem) {
+    .person-head-grid {
+      grid-template-columns: 13rem 1fr;
+      gap: 1.75rem;
+      align-items: start;
+    }
+  }
+
+  .portrait {
+    width: 100%;
+    max-width: 13rem;
+    height: auto;
+    border-radius: var(--at-border-radius);
+    /* The portraits' own top-left corner is near-black and their background is
+       mid-gold, so on the cream page they need no frame on three sides and a
+       hairline is enough to stop the gold bleeding into the page. */
+    border: 1px solid color-mix(in oklab, var(--at-secondary) 25%, transparent);
+  }
+
+  .person-head-grid dl {
+    margin-block: 0;
+  }
+</style>

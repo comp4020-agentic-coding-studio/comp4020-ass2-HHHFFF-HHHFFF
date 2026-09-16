@@ -63,28 +63,14 @@ const targets: Target[] = [
     height: 630,
     format: "png",
   },
-  {
-    svg: "portrait-noor-abadi.svg",
-    out: "src/content/people/noor-abadi.avif",
-    width: 900,
-    height: 900,
-    format: "avif",
-  },
-  {
-    svg: "portrait-halvard-sunde.svg",
-    out: "src/content/people/halvard-sunde.avif",
-    width: 900,
-    height: 900,
-    format: "avif",
-  },
-  {
-    svg: "portrait-priya-raghunathan.svg",
-    out: "src/content/people/priya-raghunathan.avif",
-    width: 900,
-    height: 900,
-    format: "avif",
-  },
 ];
+
+// The three staff portraits used to be rendered here too, from SVG. They are
+// now photographs toned by scripts/tone-portraits.ts, which writes the same
+// three paths. Two scripts writing one path is a trap — whichever ran last
+// wins, silently, and `pnpm artwork` would have quietly undone `pnpm
+// portraits` — so the targets were removed here rather than left as dead
+// entries, and the portrait SVGs deleted with them.
 
 async function render(target: Target): Promise<void> {
   const source = resolve(ARTWORK, target.svg);

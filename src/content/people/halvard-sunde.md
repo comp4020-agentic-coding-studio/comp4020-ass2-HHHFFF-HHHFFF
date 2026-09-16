@@ -7,10 +7,11 @@ affiliation: Slop University School of Language and Safety
 role: co-lecturer
 email: halvard.sunde@slop.university
 photo: ./halvard-sunde.avif
-photoAlt:
-  An emblematic portrait in flat gold and black on warm cream — a head facing
-  the viewer, wearing a headset with the boom mic swung across, against a gold
-  disc cut by a radar sweep
+photoAlt: >-
+  A staff portrait, toned in the site's gold and bronze. An older man with grey
+  hair and a grey beard, in a dark sweater over an open collar, facing the
+  camera square on with an even, unhurried expression against a plain warm
+  wall.
 contact:
   Ask on frequency during a sim session — that is the fastest route, and the
   answer usually belongs to the whole room. Email works for anything that
