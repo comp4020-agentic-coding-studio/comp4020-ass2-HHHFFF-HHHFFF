@@ -85,6 +85,15 @@ a data-integrity check that runs against real content:
   enough times to read the actual failure rate. Whether a red is noise, and
   how much margin a fix buys, are both numbers; guessing at them costs more
   than measuring.
+- **Run both directions before claiming both directions.** `figure-claims`
+  earns its "broken a second time from the other side" because the drawing and
+  the prose are two sources that can disagree. `people-roles` cannot: the label
+  is *derived* from the frontmatter value, so editing the value moves both
+  sides together and the assertion stays green no matter what it says. I had
+  the docstring claiming that second red before running it. Where one side is
+  computed from the other, only absence is detectable — write that limit down
+  next to what the check does sense, rather than inheriting a sentence from a
+  check with a different shape.
 
 ## This machine's environment
 
@@ -291,6 +300,38 @@ find.
   therefore be authored as SVG and rasterised locally to the paths the theme
   consumes. Keep that render a **local** step whose output is committed: CI
   never rasterises, so CI never needs the fonts.
+- **`heroImage` is a crop, not a picture.** The theme renders it as a
+  full-bleed band roughly 350px tall, so a square source is cropped to a
+  horizontal strip through its middle and the rest is thrown away. Geometric
+  artwork survives that (a strip through a gold disc still reads as an
+  intentional band of colour) and `hero-home.avif` is 2560x1086 because it was
+  drawn for the aspect. A **photograph does not**: a 900x900 portrait came out
+  as a macro shot of one eye and half a moustache, under a scrim, with the
+  page title over it. Nothing catches this --- `pnpm build` is green, axe is
+  happy, the alt text is accurate --- so any new `heroImage` has to be looked
+  at rather than wired up. When the source is square, put it in the page body
+  at its own aspect instead.
+- **In an Astro page, adding a `<style>` block re-writes the markup a spec
+  test greps.** Astro stamps `data-astro-cid-*` onto the scoped elements, so
+  `<dt>Role</dt>` becomes `<dt data-astro-cid-2xjjkmfy>Role</dt>` and a
+  `<dt>Role</dt>` pattern silently stops matching. Match `<dt[^>]*>` in any
+  assertion that reads built HTML.
+- **The people collection's `role` is `z.string().trim().min(1)`, not an
+  enum**, whatever the comments nearby say --- `src/content.config.ts` is the
+  only authority on that. A free-string field that gets translated for display
+  through a `Record<string, string>` lookup fails *silently* for any value not
+  in the table: no label, and a `?? 99` sort fallback. Derive the display form
+  from the value (capitalise it, name only the exceptions) so an unlisted value
+  renders wrong at worst rather than vanishing.
+- **`node` can't `require('sharp')` from a script outside the repo**, and
+  can't `require` at all from a `.js` inside it (`package.json` has `"type":
+  "module"`). A throwaway measuring script needs to be `*.cjs` **and** sit in
+  the repo root for resolution to find `node_modules`.
+- **`astro preview` takes 10--15s to accept connections and prints nothing
+  until it does.** `curl` before then returns exit 7 / `000`, which reads
+  exactly like a server that failed to start; the log file still only contains
+  the echoed command line. Wait and retry before concluding anything, and read
+  `astro preview status` rather than the absence of log output.
 
 ## Keeping PROCESS.md current
 
