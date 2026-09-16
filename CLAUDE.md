@@ -37,6 +37,44 @@ confirm it fails. If it stays green, either the assertion or the name is
 wrong --- fix whichever it is, and make the check say which of the two it now
 does.
 
+### Ask what the reading measures before asking whether it is stable
+
+The rules below and the sensor notes further down are all about sensors that
+**lie**. There is a second, worse failure: a sensor that is working perfectly,
+reporting truthfully, and answering a different question than the one asked.
+It cannot be caught by repeating the measurement, because repetition is what
+makes it convincing.
+
+It happened three times in one session:
+
+- **The expensive one.** Asked whether `SLOP1126` kept "the three digits your
+  repo arrived with", I read the digits out of the repo's *template-import*
+  commit, got `SLOP1000`, and concluded the spec was breached. Then I
+  "confirmed" it across eleven cohort repos --- all eleven `SLOP1000`, perfectly
+  consistent --- and wrote the conclusion into `src/course-config.ts` and a
+  commit message. All of it was wrong. Provisioning is template import **plus**
+  an assignment commit: `1b80b97`, authored by the convenor, seven seconds
+  after the repo was created, setting `SLOP1126`. Eleven agreeing samples of
+  the wrong quantity read exactly like certainty. The question that would have
+  killed it in one step is *if an allocation were delivered, which commit would
+  carry it and who would have authored it?* --- I asked who wrote the plugin
+  skills instead. Retracted in `745d21e`.
+- `gh run list --workflow=deploy` says "could not find any workflows named
+  deploy", which is true and means nothing: `deploy` is a **job** inside
+  `.github/workflows/checks.yml`, not a workflow file. Nearly recorded as "this
+  repo has no deploy pipeline".
+- Locating an element by sampling its colour does not work on this site,
+  twice over. Every colour derives from three brand tokens, so the KLM jet's
+  gold is also every `h2`'s gold, and the hatch's bronze is within tolerance of
+  `--at-link`. Both searches found headings and links. Position comes from
+  `getBoundingClientRect` through the iframe harness, or from scaling the whole
+  column down and looking at it.
+
+So: before trusting a reading, say out loud which quantity it is and which
+quantity the question needs. If those two sentences are not the same sentence,
+no amount of agreement between samples will help. Consistency is evidence of a
+stable sensor, never of a relevant one.
+
 Two traps from that failure, both relevant to a build with a search index and
 a data-integrity check that runs against real content:
 
@@ -258,8 +296,16 @@ find.
 
 `PROCESS.md` is maintained as the work goes, not written at the end. After any
 change that produced a real moment, consider whether it beats one of the ones
-already there, and say so rather than silently growing the file --- the brief
-asks for **three or four**, so a further one means replacing a weaker one.
+already there, and say so rather than silently growing the file.
+
+**Three or four moments is a budget I set, not something the brief asks for.**
+The brief names no number --- `moment` appears in it zero times --- so do not
+cite it as the authority for this. The budget is arithmetic: 400--600 words,
+minus the spine the brief *does* ask for (a position on what a good course is,
+what that put in the harness, what was deliberately left out), leaves room for
+about three. A further one means replacing a weaker one. This file is read
+against the brief, so a rule of mine dressed up as a rule of theirs is a
+liability in exactly the section that is being marked.
 
 A moment earns its place only if it has all four jobs: what went wrong, what
 was done **instead of the obvious thing**, how that was verified, and a
