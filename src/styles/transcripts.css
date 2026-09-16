@@ -1,0 +1,39 @@
+/* How a transmission looks on this site.
+ *
+ * Transcripts arrive as fenced code blocks because that is the only markdown
+ * construct that preserves the one thing a transmission needs: the station
+ * label in a fixed column, and what it said lined up beside it. Prose cannot
+ * hold that alignment and a table would make nineteen of them unreadable.
+ *
+ * But nothing on this site is code, and a plain bordered monospace box reads
+ * as a snippet to be run rather than a thing that was said out loud. So the
+ * treatment is one edge: a rule in the carrier gold down the left, and the
+ * corners on that side squared off, which turns the box into a strip of tape
+ * rather than a listing. Everything else — the border, the surface, the
+ * monospace face — is the theme's, untouched.
+ *
+ * Imported by the two page templates whose content carries transcripts
+ * (lectures and sessions). Every `pre` on the site is a transmission — nine
+ * lecture pages, one session page, and the decks, which get the same edge
+ * from src/decks/theme.css — so the selector does not need narrowing.
+ *
+ * What this cannot do is tell the three notations apart. `atc`,
+ * `atc-nonstandard` and `atc-verbatim` are enforced in spec/phraseology.test.ts
+ * and are the course's central distinction, but Shiki rewrites the fence tag
+ * to the language it fell back to, so the built HTML carries no trace of which
+ * was which and CSS has nothing to select on. Fixing that needs a remark
+ * plugin in astro.config.ts, which the starter fixes. The glossary carries the
+ * distinction instead, where the markup is mine.
+ */
+
+pre.astro-code {
+  border-inline-start: 3px solid var(--at-primary);
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+
+  /* Transmissions are read in lines, not paragraphs. */
+  line-height: 1.55;
+
+  /* A monospace face that ligates would join characters inside a callsign. */
+  font-variant-ligatures: none;
+}

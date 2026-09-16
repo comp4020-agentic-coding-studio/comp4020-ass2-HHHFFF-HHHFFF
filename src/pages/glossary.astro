@@ -1,6 +1,7 @@
 ---
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import { withBase } from "astro-theme-university/url";
+import Emphasised from "../components/Emphasised.astro";
 import { deviations, standardPhrases } from "../data/phraseology";
 import { siteConfig } from "../site-config";
 
@@ -52,8 +53,12 @@ const deviationCount = deviations.length;
             <tr>
               <th scope="row"><code>{p.phrase}</code></th>
               <td>
-                {p.meaning}
-                {p.note && <span class="phrase-note">{p.note}</span>}
+                <Emphasised text={p.meaning} />
+                {p.note && (
+                  <span class="phrase-note">
+                    <Emphasised text={p.note} />
+                  </span>
+                )}
               </td>
               <td class="week-cell">{p.week ?? "—"}</td>
             </tr>
@@ -87,9 +92,9 @@ const deviationCount = deviations.length;
         {
           deviations.map((d) => (
             <tr>
-              <th scope="row"><code>{d.form}</code></th>
-              <td>{d.standard}</td>
-              <td>{d.why}</td>
+              <th scope="row" class="deviation-form"><code>{d.form}</code></th>
+              <td><Emphasised text={d.standard} /></td>
+              <td><Emphasised text={d.why} /></td>
               <td class="week-cell">{d.week}</td>
             </tr>
           ))
@@ -170,5 +175,27 @@ const deviationCount = deviations.length;
     margin-block-start: 0.35rem;
     color: var(--at-text-secondary);
     font-size: 0.9rem;
+  }
+
+  /* The two tables print their entries identically, which loses the one
+     distinction the whole page exists to teach: a phrase you are held to
+     versus a form you should hear as a departure. So the second table's forms
+     are marked — and marked as *flagged*, not as deleted.
+
+     Strikethrough was the obvious treatment and is wrong here. The page says
+     it outright: "None of these is a mistake in English. Every one of them is
+     fluent." Striking them out would claim the opposite. A dotted underline
+     is the mark a reader already knows from a spell-checker — your ear should
+     catch this — and it leaves the form readable, which matters because
+     students have to be able to say it aloud to recognise it.
+
+     The distinction is not carried by the mark alone: the section heading
+     names what the table is, and the next column gives the standard form. The
+     mark is a second signal, not the only one. */
+  .deviation-form code {
+    color: var(--at-secondary);
+    text-decoration: underline dotted;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
   }
 </style>

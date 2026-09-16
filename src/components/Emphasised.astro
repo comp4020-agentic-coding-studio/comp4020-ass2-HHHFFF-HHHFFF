@@ -1,0 +1,32 @@
+---
+/**
+ * Renders the `*emphasis*` that src/data/phraseology.ts is authored with.
+ *
+ * Those prose fields are written in the same voice as the lectures, so they
+ * carry markdown emphasis by habit — and the emphasis is load-bearing rather
+ * than decorative: it marks a word being *discussed* rather than used, which
+ * on a page about phraseology is a distinction the reader needs. `*Thirteen*
+ * and *thirty* survive noise far less well than *one three*` is unreadable
+ * without it.
+ *
+ * But the glossary interpolates those fields into table cells as text, so the
+ * asterisks were printing literally — six of them visible on the built page.
+ *
+ * The fix splits on the delimiter and emits real `<em>` elements. A capturing
+ * group puts the emphasised runs at the odd indices of the split, which is
+ * what the `i % 2` test reads. Nothing is ever handed to `set:html`: the parts
+ * stay text nodes, so a stray `<` in the data cannot become markup.
+ *
+ * Deliberately not a markdown renderer. These fields need one delimiter, and
+ * pulling a parser in to serve `*x*` would mean the data could grow links and
+ * headings that the table has no design for.
+ */
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props as Props;
+const parts: string[] = text.split(/\*([^*]+)\*/g);
+---
+
+{parts.map((part: string, i: number) => (i % 2 === 1 ? <em>{part}</em> : part))}

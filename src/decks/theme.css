@@ -11,3 +11,15 @@
  * slide class you reach for (`_class: quote`), a code-heavy layout, a
  * background. */
 @import url("astro-theme-university/styles/deck.css");
+
+/* The same edge the site gives a transmission, so a transcript on a slide and
+   a transcript on a lecture page read as the same kind of object. One rule,
+   derived from --at-primary rather than restated, which is the whole reason
+   this file is one import and a short tail. See src/styles/transcripts.css
+   for why a transcript is a code block at all. */
+.reveal pre {
+  border-inline-start: 3px solid var(--at-primary);
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+  font-variant-ligatures: none;
+}
