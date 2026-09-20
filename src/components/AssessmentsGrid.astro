@@ -17,36 +17,34 @@ const assessments = await getPublishedCollection("assessments");
 const visible = assessments.sort((a, b) => a.data.week - b.data.week);
 ---
 
-<div class="bleed">
-  <ol class="chrono bleed-wide">
-    {
-      visible.map((assessment) => (
-        <li class="chrono-row">
-          <span class="chrono-week">
-            <span class="chrono-week-label">Week</span>
-            <span class="chrono-week-number">{assessment.data.week}</span>
-          </span>
+<ol class="chrono">
+  {
+    visible.map((assessment) => (
+      <li class="chrono-row">
+        <span class="chrono-week">
+          <span class="chrono-week-label">Week</span>
+          <span class="chrono-week-number">{assessment.data.week}</span>
+        </span>
 
-          <div class="chrono-body">
-            <h2 class="chrono-title">
-              <a href={withBase(`/assessments/${assessment.id}/`)}>{assessment.data.title}</a>
-            </h2>
-            {assessment.data.description && (
-              <p class="chrono-description">{assessment.data.description}</p>
-            )}
-          </div>
+        <div class="chrono-body">
+          <h2 class="chrono-title">
+            <a href={withBase(`/assessments/${assessment.id}/`)}>{assessment.data.title}</a>
+          </h2>
+          {assessment.data.description && (
+            <p class="chrono-description">{assessment.data.description}</p>
+          )}
+        </div>
 
-          <p class="chrono-meta">
-            {assessment.data.weight != null && (
-              <span class="chrono-weight">{assessment.data.weight}%</span>
-            )}
-            <small>
-              Due {formatCourseDate(assessment.data.due)}
-              {assessment.data.draft && " · Draft"}
-            </small>
-          </p>
-        </li>
-      ))
-    }
-  </ol>
-</div>
+        <p class="chrono-meta">
+          {assessment.data.weight != null && (
+            <span class="chrono-weight">{assessment.data.weight}%</span>
+          )}
+          <small>
+            Due {formatCourseDate(assessment.data.due)}
+            {assessment.data.draft && " · Draft"}
+          </small>
+        </p>
+      </li>
+    ))
+  }
+</ol>

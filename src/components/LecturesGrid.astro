@@ -15,28 +15,26 @@ const lectures = await getPublishedCollection("lectures");
 const visible = lectures.sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
 ---
 
-<div class="bleed">
-  <ol class="chrono bleed-wide">
-    {
-      visible.map((lecture) => (
-        <li class="chrono-row">
-          <span class="chrono-week">
-            <span class="chrono-week-label">Week</span>
-            <span class="chrono-week-number">{lecture.data.week}</span>
-          </span>
+<ol class="chrono">
+  {
+    visible.map((lecture) => (
+      <li class="chrono-row">
+        <span class="chrono-week">
+          <span class="chrono-week-label">Week</span>
+          <span class="chrono-week-number">{lecture.data.week}</span>
+        </span>
 
-          <div class="chrono-body">
-            <h2 class="chrono-title">
-              <a href={withBase(`/lectures/${lecture.id}/`)}>{lecture.data.title}</a>
-            </h2>
-            {lecture.data.description && <p class="chrono-description">{lecture.data.description}</p>}
-          </div>
+        <div class="chrono-body">
+          <h2 class="chrono-title">
+            <a href={withBase(`/lectures/${lecture.id}/`)}>{lecture.data.title}</a>
+          </h2>
+          {lecture.data.description && <p class="chrono-description">{lecture.data.description}</p>}
+        </div>
 
-          <p class="chrono-meta">
-            <small>{formatCourseDate(lecture.data.date)}</small>
-          </p>
-        </li>
-      ))
-    }
-  </ol>
-</div>
+        <p class="chrono-meta">
+          <small>{formatCourseDate(lecture.data.date)}</small>
+        </p>
+      </li>
+    ))
+  }
+</ol>

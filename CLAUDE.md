@@ -206,11 +206,25 @@ find.
   `body` defines `full` / `inset` / `content`; `.at-main` is scoped to
   `inset-start / content-end`, so content inside a page cannot reach `full`
   without an unlayered `.at-main { grid-column: full }` override plus the
-  theme's own `display: grid; grid-template-columns: subgrid` pattern. Note
-  the override only applies on pages that import the stylesheet carrying it
-  --- the lecture and person detail pages don't, and measure `main` at 900px
-  while the listing pages measure it at 1600px. That difference is invisible
-  in both, because `main > p` is 864px either way.
+  theme's own `display: grid; grid-template-columns: subgrid` pattern. That
+  override is **not** in the repo any more --- it went with the `.bleed`
+  breakout it existed to serve, so `main` now measures 900px (350..1250)
+  uniformly on home, listing and detail pages alike, and anything wanting
+  `full` has to re-add it. While it was there it applied only on pages that
+  imported the stylesheet carrying it, so the listing pages measured `main`
+  at 1600px and the detail pages at 900px --- a difference invisible in both,
+  because `main > p` is 864px either way.
+- **A breakout out of the content column can only grow rightward here, so a
+  wider band *is* a ragged right margin.** base.css draws a 1px accent rule
+  down the page at the `inset-start` line (x=350 in a 1600px window), and a
+  centred 60rem band would start at x=260, so centring puts the rule through
+  the content. Running the band `content-start / full-end` instead was the
+  only option, and it ended every widened element at x=1466 against x=1250
+  for every paragraph --- 216px of overhang on five elements across four
+  pages, which is what "the right side sticks out and looks awkward" turned
+  out to mean. Measure a candidate band's right edge against `main > p` on
+  the same page before building on it; if the two differ, that gap is the
+  design, not a bug you can tune out.
 - **`--at-content-inset` is `0px` below 640px and the gutter halves with
   it.** base.css does this in a `@media (width < 640px)` block, which makes
   any width expression built from the inset alone wrong at 390px:

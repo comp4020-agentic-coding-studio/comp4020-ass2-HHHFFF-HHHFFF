@@ -14,28 +14,26 @@ const sessions = await getPublishedCollection("sessions");
 const visible = sessions.sort((a, b) => a.data.week - b.data.week);
 ---
 
-<div class="bleed">
-  <ol class="chrono bleed-wide">
-    {
-      visible.map((session) => (
-        <li class="chrono-row">
-          <span class="chrono-week">
-            <span class="chrono-week-label">Week</span>
-            <span class="chrono-week-number">{session.data.week}</span>
-          </span>
+<ol class="chrono">
+  {
+    visible.map((session) => (
+      <li class="chrono-row">
+        <span class="chrono-week">
+          <span class="chrono-week-label">Week</span>
+          <span class="chrono-week-number">{session.data.week}</span>
+        </span>
 
-          <div class="chrono-body">
-            <h2 class="chrono-title">
-              <a href={withBase(`/sessions/${session.id}/`)}>{session.data.title}</a>
-            </h2>
-            {session.data.description && <p class="chrono-description">{session.data.description}</p>}
-          </div>
+        <div class="chrono-body">
+          <h2 class="chrono-title">
+            <a href={withBase(`/sessions/${session.id}/`)}>{session.data.title}</a>
+          </h2>
+          {session.data.description && <p class="chrono-description">{session.data.description}</p>}
+        </div>
 
-          <p class="chrono-meta">
-            <small>{formatCourseDate(session.data.date)}</small>
-          </p>
-        </li>
-      ))
-    }
-  </ol>
-</div>
+        <p class="chrono-meta">
+          <small>{formatCourseDate(session.data.date)}</small>
+        </p>
+      </li>
+    ))
+  }
+</ol>

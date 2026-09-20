@@ -4,68 +4,37 @@
  * `@layer at.components` without `!important` — the same technique
  * components.css itself uses for the astro-island subgrid override.
  *
- * `.at-main` is scoped to `inset-start / content-end` in the theme, so its
- * subgrid never sees the `full` named lines body defines — only Nav,
- * Footer and Hero do, because they're direct children of `body`, not of
- * `main`. Widening `.at-main`'s own span makes `full` reachable for content
- * inside the page too, using the exact same
- * `grid-column: full; display: grid; grid-template-columns: subgrid;`
- * pattern the theme already applies to `.at-nav` / `.at-footer` / `.at-hero`.
- * Ordinary content is unaffected: `.at-main > *` still defaults to
- * `content` (that rule lives in the theme's components.css and isn't
- * touched here), so nothing changes on a page that never opts a section
- * into `.bleed`.
+ * ## The breakout that used to live here, and why it is gone
+ *
+ * There was a `.bleed` / `.bleed-wide` pair that widened the masthead, the
+ * semester spine and the three chronology lists to 60rem, against the 48rem
+ * (864px) content column. It worked, and it was the wrong call.
+ *
+ * It could only take the extra width from the *right*. Growing leftward or
+ * centring is not available: base.css draws a 1px accent rule down the page
+ * at the `inset-start` line, x=350 in a 1600px window, and a centred 60rem
+ * band starts at x=260, so the rule cut straight through the content. So the
+ * band ran `content-start / full-end` and every one of the five widened
+ * elements ended at x=1466 while every paragraph and almost every heading
+ * ended at x=1250 — measured across all four pages through the same-origin
+ * iframe harness. A 216px ragged right margin, on five elements, down the
+ * whole site.
+ *
+ * On the spine that overhang was empty in 8 of the 12 rows (only four weeks
+ * have an assessment due), so the extra width bought a rule sticking out
+ * into blank space. On the chronology lists it held the date, which read as
+ * detached from the row it belonged to.
+ *
+ * There is no version of this that keeps the width and loses the raggedness
+ * — the breakout *is* the protrusion. So it was removed rather than tuned,
+ * and the call sites with it, so nothing is left as dead machinery. The
+ * `.at-main { grid-column: full }` override went too: it existed only to
+ * make the `full` named line reachable from inside `main` for `.bleed`.
+ *
+ * Everything now shares the content column's right edge. The editorial
+ * weight that pass was after comes from type scale, rules and rhythm, which
+ * is where it should have come from — not from being wider than the prose.
  */
-.at-main {
-  grid-column: full;
-}
-
-.bleed {
-  grid-column: full;
-  display: grid;
-  grid-template-columns: subgrid;
-}
-
-.bleed > * {
-  grid-column: content;
-}
-
-/*
- * A band wider than the normal content column but short of the true
- * viewport edge — for sections that want editorial weight without reading
- * as a full-bleed image or the site chrome. Sits inside `.bleed` as the
- * thing that actually gets centred and padded; `.bleed` itself only exists
- * to make the `full` span reachable.
- *
- * It has to re-declare `grid-column: full`, because `.bleed > *` above pins
- * every child back to `content`. Without that line the element is laid out
- * in an 864px grid area and `min(100%, 64rem)` resolves to 864px — i.e. the
- * ordinary content width, so the band renders pixel-identical to a plain
- * paragraph and the breakout silently does nothing. Measured through the
- * same-origin iframe harness rather than eyeballed, in a 1600px window:
- * `.bleed` 1600, `.bleed-wide` 864 before and 1080 after, against
- * `main > p` at 864.
- *
- * It grows rightward only — `content-start / full-end` — rather than being
- * centred on the viewport. Centring was tried first and is wrong here:
- * base.css draws a 1px accent rule down the page at the `inset-start` line
- * (x=350 in a 1600px window), and a viewport-centred 64rem band starts at
- * x=224, so the rule ran straight through the lede's body text. The theme
- * lets its own full-bleed elements cross that rule — it passes over the hero
- * image — but over prose it reads as a defect. Taking the extra width from
- * the right margin keeps every heading on one left rail down the page and
- * leaves the rule where the theme puts it.
- *
- * The width expression subtracts a gutter so the band never reaches the
- * window edge. Below 640px base.css sets `--at-content-inset: 0px` and
- * halves the gutter; the same expression lands the band on 354px in a 390px
- * window — exactly the content column, which is the right answer at a width
- * with nothing to widen into.
- */
-.bleed-wide {
-  grid-column: content-start / full-end;
-  width: min(100% - var(--at-gutter), 60rem);
-}
 
 /*
  * Fluid type scale for editorial display text, built from the existing
