@@ -11,6 +11,7 @@
     "check": "pnpm typecheck && pnpm test",
     "check:evidence": "node scripts/check-evidence.ts",
     "artwork": "node scripts/render-artwork.ts",
+    "hero": "node scripts/render-hero.ts",
     "portraits": "node scripts/tone-portraits.ts",
     "test": "pnpm build && vitest run spec",
     "test:template": "vitest run scripts"

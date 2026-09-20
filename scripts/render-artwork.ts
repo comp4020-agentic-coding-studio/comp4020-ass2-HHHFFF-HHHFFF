@@ -49,13 +49,6 @@ const ARTWORK = "src/assets/artwork";
 
 const targets: Target[] = [
   {
-    svg: "hero-readback-loop.svg",
-    out: "src/assets/images/hero-home.avif",
-    width: 2560,
-    height: 1086,
-    format: "avif",
-  },
-  {
     // 1200x630 is the link-preview convention; the theme re-encodes to JPEG.
     svg: "card.svg",
     out: "src/assets/images/card.png",
@@ -71,6 +64,12 @@ const targets: Target[] = [
 // wins, silently, and `pnpm artwork` would have quietly undone `pnpm
 // portraits` — so the targets were removed here rather than left as dead
 // entries, and the portrait SVGs deleted with them.
+//
+// The home page hero went the same way, for the same reason. It was
+// hero-readback-loop.svg -> src/assets/images/hero-home.avif; it is now
+// scripts/render-hero.ts, from a generated raster. Leaving the target here
+// would have meant `pnpm artwork` silently restoring the old hero. The SVG
+// was deleted with it rather than left as an orphan source.
 
 async function render(target: Target): Promise<void> {
   const source = resolve(ARTWORK, target.svg);

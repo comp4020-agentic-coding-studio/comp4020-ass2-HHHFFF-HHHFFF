@@ -7,13 +7,23 @@ import heroImage from "../assets/images/hero-home.avif";
 import { courseMeta } from "../course-config";
 import { siteConfig } from "../site-config";
 import "../styles/layout.css";
+
+// Describes the centre of the frame, because the centre is all that survives:
+// `heroImage` is a crop, and at 390px only the middle 46% of the source width
+// is on screen (measured — the box is 390x360 there against 1600x566 at a
+// 1600px window). The two airliners flanking the tower are outside that, so
+// they are not what this promises.
+const heroAlt =
+  "A control tower picked out in gold at the centre of a near-black " +
+  "illustration, with broad concentric gold arcs spreading outward from its " +
+  "mast like radio waves";
 ---
 
 <ContentLayout
   title={`${courseMeta.code}: ${courseMeta.title}`}
   description={courseMeta.description}
   heroImage={heroImage}
-  heroImageAlt="A readback loop drawn as a diagram: two stations, a carrier arcing out from one and back from the other, over a band of clipped waveform, in flat gold and black"
+  heroImageAlt={heroAlt}
   {...siteConfig}
 >
   <section class="bleed">

@@ -348,16 +348,52 @@ find.
   consumes. Keep that render a **local** step whose output is committed: CI
   never rasterises, so CI never needs the fonts.
 - **`heroImage` is a crop, not a picture.** The theme renders it as a
-  full-bleed band roughly 350px tall, so a square source is cropped to a
-  horizontal strip through its middle and the rest is thrown away. Geometric
-  artwork survives that (a strip through a gold disc still reads as an
-  intentional band of colour) and `hero-home.avif` is 2560x1086 because it was
-  drawn for the aspect. A **photograph does not**: a 900x900 portrait came out
-  as a macro shot of one eye and half a moustache, under a scrim, with the
-  page title over it. Nothing catches this --- `pnpm build` is green, axe is
-  happy, the alt text is accurate --- so any new `heroImage` has to be looked
-  at rather than wired up. When the source is square, put it in the page body
-  at its own aspect instead.
+  full-bleed band, so a square source is cropped to a horizontal strip through
+  its middle and the rest is thrown away. Geometric artwork survives that (a
+  strip through a gold disc still reads as an intentional band of colour) and
+  `hero-home.avif` is 2560x1086 because it was drawn for the aspect. A
+  **photograph does not**: a 900x900 portrait came out as a macro shot of one
+  eye and half a moustache, under a scrim, with the page title over it. Nothing
+  catches this --- `pnpm build` is green, axe is happy, the alt text is
+  accurate --- so any new `heroImage` has to be looked at rather than wired up.
+  When the source is square, put it in the page body at its own aspect instead.
+  The measured boxes, which are **not** "roughly 350px tall": **1600x566** at a
+  1600px window (aspect 2.83, keeping 83% of a 2560x1086 asset's height) and
+  **390x360** at 390px (aspect 1.08, keeping only **46% of its width**). So the
+  subject has to be centred and everything that matters has to sit inside the
+  middle 46% --- detail at the left or right edge simply does not exist on
+  mobile.
+- **The hero's scrim is heavier than it looks, and it decides which artwork can
+  work at all.** `.at-hero-content` lays
+  `linear-gradient(#00000026, #0009 50%, #000c)` over the image so the white
+  title stays legible: 15% black at the top, **60% at mid-height, 80% at the
+  foot**. A cream-ground illustration --- calm sky, centred tower, thin gold
+  hairline arcs, both crops verified clean --- went to grey-brown sludge the
+  moment it rendered, and it was encoded, wired up and building green before
+  that was visible. The crop preview was not broken; it was answering *what
+  does this artwork look like* when the question was *what does it look like
+  under a 60-to-80% black gradient*. Dark-ground with generous gold survives,
+  because the scrim compresses contrast and near-black plus strong gold has
+  contrast to spare where cream plus hairlines does not --- which is why the
+  hand-drawn gold-on-black hero this replaced never looked muddy. **Composite
+  that gradient over any hero candidate before choosing it**; the simulation
+  agreed with the real render once it included the scrim.
+- **Generations from the image proxy can carry a pale mat on all four edges.**
+  `ideogram-v3-quality` returned a near-black poster with a ~21px light border:
+  column means 187/186 at left/right, row means 185/185 at top/bottom, against
+  52 twenty pixels further in. On a full-bleed band that renders as two light
+  vertical strips down the outer edges. `scripts/render-hero.ts` trims 24px a
+  side. Check for it rather than assuming the frame is the artwork --- and note
+  the proxy does not honour the requested size either: `1792x1024` comes back
+  **1312x736**, so writing a 2560-wide asset is a ~1.95x upscale (fine for flat
+  vector fields, not for anything with texture).
+- **`sharp`'s `.stats()` ignores a preceding `.extract()`.** Profiling those
+  edge columns, `sharp(f).extract(...).greyscale().stats()` returned an
+  identical mean of 68.3 for all six bands --- including ones that obviously
+  differ --- because it reports whole-image statistics. A perfectly stable
+  sensor measuring the wrong region. Reduce over `.raw().toBuffer()` instead,
+  and put a band you *know* differs in the same batch: that control is what
+  exposed it in one step.
 - **In an Astro page, adding a `<style>` block re-writes the markup a spec
   test greps.** Astro stamps `data-astro-cid-*` onto the scoped elements, so
   `<dt>Role</dt>` becomes `<dt data-astro-cid-2xjjkmfy>Role</dt>` and a
@@ -392,8 +428,12 @@ download immediately.
 - **Read the constraints off a 400 rather than guessing — rejections are
   free.** Models: `flux-1.1-pro`, `flux-dev`, `flux-schnell`,
   `ideogram-v3-quality`, `recraft-v3`. Sizes: **only** `1024x1024`,
-  `1024x1792`, `1792x1024`. `n` is 1--4, except `ideogram-v3-quality` which
-  caps at 1 per call.
+  `1024x1792`, `1792x1024`. `n` is 1--4, except `ideogram-v3-quality` **and
+  `flux-1.1-pro`**, which both cap at 1 (`model 'flux-1.1-pro' returns at most
+  1 image(s) per call`) --- so treat per-model caps as something to discover on
+  a 400, not a property only one model has. And the size is a *request*, not a
+  contract: `ideogram-v3-quality` answers `1792x1024` with **1312x736**, so
+  read the dimensions back off the file before computing any crop from them.
 - **`ideogram-v3-quality` follows a prompt that `flux-dev` overrides.**
   `flux-dev` returned a woman of about twenty on four separate attempts at a
   prompt asking for a woman of about fifty --- including one describing the
@@ -411,14 +451,18 @@ download immediately.
 - **Non-ASCII in a prompt fails the whole request.** An em-dash in the JSON
   body comes back `400 {"detail":"There was an error parsing the body"}` from
   this shell. Keep prompts ASCII.
-- `GET api/me` returns `anu_id`, `current_week_spend`, `max_budget` (200) and
-  `total_spend` --- useful, and the only budget reading available. **Image
-  generation does not show up in `current_week_spend`**: it did not move
-  across nine images with a 25-second settle, while moving steadily from
-  model usage the whole time. So per-image cost is *not* measurable this way,
-  and the counter is a model-usage counter. An earlier note in this session
-  claiming a measured \$0.10 per image does not reproduce and should not be
-  relied on.
+- `GET api/me` returns two **separate** budgets, and reading the wrong one is
+  what made this note wrong twice. `current_week_spend` / `max_budget` is a
+  **model-usage** counter: image generation genuinely does not move it (it held
+  still across nine images with a 25-second settle while climbing steadily from
+  model calls), and an earlier note correctly observed that and then wrongly
+  concluded per-image cost was unmeasurable. It is measurable --- in
+  `image_spend` / `image_budget` / `image_budget_remaining`, which the same
+  response carries. Images cost **\$0.10 each**, confirmed twice: 5.50 -> 5.60
+  -> 5.80 over three calls, and 6.30 -> 6.60 over three more. The lesson is the
+  general one: "the counter did not move" answers *does this counter track
+  that* and says nothing about whether another field does. Enumerate the
+  response before concluding a quantity is unavailable.
 
 ## Keeping PROCESS.md current
 
