@@ -139,16 +139,24 @@
     "week body"
     "week meta";
   column-gap: var(--at-spacing-md);
-  /* The inline padding is what lets the hover wash read as a band around the
-     row rather than a rectangle starting at the first letter. The matching
-     negative margin puts the row's *box* into the margin while leaving its
-     content on the page's left rail. Measured on /lectures/ at 1600px:
-     `main > p` and `.chrono-week` both at x=386, the row box at x=368. Note
-     it is the week column that lands on the rail, not `.chrono-title` — the
-     title is at x=503, one grid column further in, which is where it should
-     be and is not what this margin is protecting. */
-  padding: var(--at-spacing-lg) var(--at-spacing-md);
-  margin-inline: calc(var(--at-spacing-md) * -1);
+  /* Block padding only. There used to be `padding: lg md` with a matching
+     `margin-inline: calc(md * -1)`, so the row's *box* sat 18px outside the
+     content column on both sides while its content stayed aligned with the
+     prose — the idea being that the hover wash should read as a band around
+     the row rather than a rectangle starting at the first letter.
+
+     It also made the list disagree with itself, which is the part that
+     showed. `.chrono` carries the heavy rule at the top and has no such
+     margin, so at a 1600px window that rule ran 386..1250 while all twelve
+     row dividers under it ran 368..1268 — measured, and obvious once the
+     right edge is cropped out and scaled 4x. Twelve hairlines overhanging
+     the one above them, and overhanging every paragraph on the page.
+
+     So the row is flush with the content column now: box and ink both
+     386..1250, the same as `main > p`, `.chrono` and `.spine`. The hover
+     affordance does not need the bleed — `::before` below reaches into the
+     left rail on its own. */
+  padding-block: var(--at-spacing-lg);
   border-block-end: 1px solid var(--at-divider);
   transition:
     background-color 0.15s,
@@ -164,12 +172,19 @@
 }
 
 /* A brand bar down the leading edge on hover. `scaleY` from zero rather
-   than a width change, so it wipes in instead of nudging the layout. */
+   than a width change, so it wipes in instead of nudging the layout.
+
+   Offset into the left rail rather than sitting at the row's own edge: the
+   row is flush with the prose now, so `inset-inline-start: 0` would put the
+   bar on top of the week label. The rail between the accent rule (x=350)
+   and the content column (x=386) is empty and is where this belongs. It is
+   `position: absolute` against the row, so it does not widen anything — the
+   right edge stays at 1250, which was the whole point. */
 .chrono-row::before {
   content: "";
   position: absolute;
   inset-block: 0;
-  inset-inline-start: 0;
+  inset-inline-start: calc(var(--at-spacing-md) * -1);
   width: 3px;
   background: var(--at-primary);
   transform: scaleY(0);
