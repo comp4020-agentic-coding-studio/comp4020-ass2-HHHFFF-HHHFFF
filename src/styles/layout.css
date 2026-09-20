@@ -36,10 +36,34 @@
  * as a full-bleed image or the site chrome. Sits inside `.bleed` as the
  * thing that actually gets centred and padded; `.bleed` itself only exists
  * to make the `full` span reachable.
+ *
+ * It has to re-declare `grid-column: full`, because `.bleed > *` above pins
+ * every child back to `content`. Without that line the element is laid out
+ * in an 864px grid area and `min(100%, 64rem)` resolves to 864px — i.e. the
+ * ordinary content width, so the band renders pixel-identical to a plain
+ * paragraph and the breakout silently does nothing. Measured through the
+ * same-origin iframe harness rather than eyeballed: `.bleed` 1600,
+ * `.bleed-wide` 864 before, 1152 after, against `main > p` at 864.
+ *
+ * It grows rightward only — `content-start / full-end` — rather than being
+ * centred on the viewport. Centring was tried first and is wrong here:
+ * base.css draws a 1px accent rule down the page at the `inset-start` line
+ * (x=350 in a 1600px window), and a viewport-centred 64rem band starts at
+ * x=224, so the rule ran straight through the lede's body text. The theme
+ * lets its own full-bleed elements cross that rule — it passes over the hero
+ * image — but over prose it reads as a defect. Taking the extra width from
+ * the right margin keeps every heading on one left rail down the page and
+ * leaves the rule where the theme puts it.
+ *
+ * The width expression subtracts a gutter so the band never reaches the
+ * window edge. Below 640px base.css sets `--at-content-inset: 0px` and
+ * halves the gutter; the same expression lands the band on 354px in a 390px
+ * window — exactly the content column, which is the right answer at a width
+ * with nothing to widen into.
  */
 .bleed-wide {
-  width: min(100%, 64rem);
-  margin-inline: auto;
+  grid-column: content-start / full-end;
+  width: min(100% - var(--at-gutter), 60rem);
 }
 
 /*

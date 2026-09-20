@@ -1,12 +1,11 @@
 ---
-import Card from "astro-theme-university/components/Card.astro";
-import CardGrid from "astro-theme-university/components/CardGrid.astro";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import { withBase } from "astro-theme-university/url";
+import DestinationTiles from "../components/DestinationTiles.astro";
 import SemesterSpine from "../components/SemesterSpine.astro";
 import heroImage from "../assets/images/hero-home.avif";
 import { courseMeta } from "../course-config";
-import { sessionLabels, siteConfig } from "../site-config";
+import { siteConfig } from "../site-config";
 import "../styles/layout.css";
 ---
 
@@ -17,24 +16,33 @@ import "../styles/layout.css";
   heroImageAlt="A readback loop drawn as a diagram: two stations, a carrier arcing out from one and back from the other, over a band of clipped waveform, in flat gold and black"
   {...siteConfig}
 >
-  <ul class="course-tags" aria-label="Course tags">
-    {courseMeta.tags.map((tag) => <li>{tag}</li>)}
-  </ul>
+  <section class="bleed">
+    <div class="bleed-wide masthead-grid">
+      <div class="masthead-primary">
+        <ul class="course-tags" aria-label="Course tags">
+          {courseMeta.tags.map((tag) => <li>{tag}</li>)}
+        </ul>
 
-  <p class="lede">
-    Aviation radio English is a language built on purpose, by identifiable
-    people, to make one kind of mistake impossible. It is worse than ordinary
-    English at nearly everything, and that is the trade.
-  </p>
+        <p class="lede lede-xl">
+          Aviation radio English is a language built on purpose, by
+          identifiable people, to make one kind of mistake impossible. It is
+          worse than ordinary English at nearly everything, and that is the
+          trade.
+        </p>
+      </div>
 
-  <p>
-    This course reads it as a designed artefact. For every rule: what problem
-    was it for, what was the alternative, what evidence decided it — and does
-    the evidence still hold. The accident record is the other half, and it is
-    not here for drama. It is the only evidence available about where a
-    language engineered against misunderstanding still lets misunderstanding
-    through.
-  </p>
+      <div class="masthead-secondary">
+        <p>
+          This course reads it as a designed artefact. For every rule: what
+          problem was it for, what was the alternative, what evidence decided
+          it — and does the evidence still hold. The accident record is the
+          other half, and it is not here for drama. It is the only evidence
+          available about where a language engineered against
+          misunderstanding still lets misunderstanding through.
+        </p>
+      </div>
+    </div>
+  </section>
 
   <h2>What you will do</h2>
 
@@ -91,14 +99,18 @@ import "../styles/layout.css";
     say exactly what went wrong.
   </p>
 
-  <h2>The twelve weeks</h2>
+  <section class="bleed">
+    <div class="bleed-wide">
+      <h2>The twelve weeks</h2>
 
-  <p>
-    The lecture argues, the sim session drills, and four times a semester
-    something is due.
-  </p>
+      <p>
+        The lecture argues, the sim session drills, and four times a semester
+        something is due.
+      </p>
 
-  <SemesterSpine />
+      <SemesterSpine />
+    </div>
+  </section>
 
   <h2>How it is marked</h2>
 
@@ -113,37 +125,22 @@ import "../styles/layout.css";
 
   <h2>Where to go next</h2>
 
-  <CardGrid columns={2}>
-    <Card title="Lectures" href="/lectures/">
-      <p>
-        The twelve weeks, from what the simplex channel takes away to what a
-        designed language cannot fix.
-      </p>
-    </Card>
-    <Card title={sessionLabels.plural} href="/sessions/">
-      <p>
-        What actually happens in the hour on frequency, week by week, and what
-        you are expected to walk out with.
-      </p>
-    </Card>
-    <Card title="Assessment" href="/assessments/">
-      <p>Four components, what each is worth, and what none of them mark.</p>
-    </Card>
-    <Card title="Glossary" href="/glossary/">
-      <p>
-        The phrases the course holds you to, and the forms it teaches you to
-        hear as wrong.
-      </p>
-    </Card>
-  </CardGrid>
+  <DestinationTiles />
 </ContentLayout>
 
 <style>
+  .masthead-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--at-spacing-xl);
+    padding-block: var(--at-spacing-md) var(--at-spacing-xl);
+  }
+
   .course-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-block: 0 2rem;
+    margin-block: 0 1.5rem;
     padding: 0;
     list-style: none;
   }
@@ -157,7 +154,26 @@ import "../styles/layout.css";
   }
 
   .lede {
-    font-size: 1.15rem;
-    line-height: 1.6;
+    margin: 0;
+  }
+
+  .masthead-secondary {
+    color: var(--at-text-secondary);
+  }
+
+  .masthead-secondary p {
+    margin: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .masthead-grid {
+      grid-template-columns: 3fr 2fr;
+      align-items: start;
+    }
+
+    .masthead-secondary {
+      padding-inline-start: var(--at-spacing-xl);
+      border-inline-start: 1px solid var(--at-border);
+    }
   }
 </style>
