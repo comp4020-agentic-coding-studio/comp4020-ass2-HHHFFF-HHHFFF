@@ -1,20 +1,42 @@
 ---
+/**
+ * The twelve lectures as a chronology rather than a card grid.
+ *
+ * Layout comes from the shared `.chrono` rules in src/styles/layout.css,
+ * which the sessions and assessments indexes use too. Same data, same sort,
+ * same hrefs as the CardGrid this replaces.
+ */
 import { getPublishedCollection } from "astro-course-university/content";
-import Card from "astro-theme-university/components/Card.astro";
-import CardGrid from "astro-theme-university/components/CardGrid.astro";
+import { withBase } from "astro-theme-university/url";
 import { formatCourseDate } from "../lib/dates";
+import "../styles/layout.css";
 
 const lectures = await getPublishedCollection("lectures");
 const visible = lectures.sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
 ---
 
-<CardGrid columns={2}>
-  {
-    visible.map((lecture) => (
-      <Card headingLevel="h2" title={lecture.data.title} href={`/lectures/${lecture.id}/`}>
-        {lecture.data.description && <p>{lecture.data.description}</p>}
-        <p><small>Week {lecture.data.week} · {formatCourseDate(lecture.data.date)}</small></p>
-      </Card>
-    ))
-  }
-</CardGrid>
+<div class="bleed">
+  <ol class="chrono bleed-wide">
+    {
+      visible.map((lecture) => (
+        <li class="chrono-row">
+          <span class="chrono-week">
+            <span class="chrono-week-label">Week</span>
+            <span class="chrono-week-number">{lecture.data.week}</span>
+          </span>
+
+          <div class="chrono-body">
+            <h2 class="chrono-title">
+              <a href={withBase(`/lectures/${lecture.id}/`)}>{lecture.data.title}</a>
+            </h2>
+            {lecture.data.description && <p class="chrono-description">{lecture.data.description}</p>}
+          </div>
+
+          <p class="chrono-meta">
+            <small>{formatCourseDate(lecture.data.date)}</small>
+          </p>
+        </li>
+      ))
+    }
+  </ol>
+</div>

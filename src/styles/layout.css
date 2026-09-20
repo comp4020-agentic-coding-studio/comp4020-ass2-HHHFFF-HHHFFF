@@ -42,8 +42,9 @@
  * in an 864px grid area and `min(100%, 64rem)` resolves to 864px — i.e. the
  * ordinary content width, so the band renders pixel-identical to a plain
  * paragraph and the breakout silently does nothing. Measured through the
- * same-origin iframe harness rather than eyeballed: `.bleed` 1600,
- * `.bleed-wide` 864 before, 1152 after, against `main > p` at 864.
+ * same-origin iframe harness rather than eyeballed, in a 1600px window:
+ * `.bleed` 1600, `.bleed-wide` 864 before and 1080 after, against
+ * `main > p` at 864.
  *
  * It grows rightward only — `content-start / full-end` — rather than being
  * centred on the viewport. Centring was tried first and is wrong here:
@@ -81,4 +82,109 @@
 .lede-xl {
   font-size: clamp(var(--at-font-size-h4), 1vw + 1rem, 1.375rem);
   line-height: 1.5;
+}
+
+/*
+ * The chronology row list, shared by the lectures, sessions and assessments
+ * indexes. All three are week-ordered sequences, and a symmetric 2-up card
+ * grid says the opposite — that the entries are interchangeable. One row per
+ * entry: the week leads (the first thing anyone looks for, in the same
+ * numbering language SemesterSpine uses), the title and description carry
+ * the middle, and a short right-hand stat closes it.
+ *
+ * Global rather than three copies of the same scoped block, because the only
+ * thing that differs between the three is what goes in the stat column.
+ */
+.chrono {
+  margin-block: var(--at-spacing-lg) var(--at-spacing-xl);
+  padding: 0;
+  list-style: none;
+  border-block-start: 2px solid var(--at-text-secondary);
+}
+
+.chrono-row {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  grid-template-areas:
+    "week body"
+    "week meta";
+  column-gap: var(--at-spacing-md);
+  padding-block: var(--at-spacing-lg);
+  border-block-end: 1px solid var(--at-divider);
+}
+
+.chrono-week {
+  grid-area: week;
+  display: flex;
+  flex-direction: column;
+  color: var(--at-primary);
+  line-height: 1.1;
+}
+
+.chrono-week-label {
+  font-size: var(--at-font-size-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--at-text-muted);
+}
+
+.chrono-week-number {
+  font-size: 2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.chrono-body {
+  grid-area: body;
+}
+
+.chrono-title {
+  margin: 0;
+  font-size: var(--at-font-size-h3);
+  line-height: 1.25;
+}
+
+.chrono-title a {
+  text-decoration: none;
+}
+
+.chrono-title a:hover,
+.chrono-title a:focus-visible {
+  text-decoration: underline;
+}
+
+.chrono-description {
+  margin: 0.35rem 0 0;
+  color: var(--at-text-secondary);
+}
+
+.chrono-meta {
+  grid-area: meta;
+  margin: 0.5rem 0 0;
+  color: var(--at-text-muted);
+}
+
+/* The assessments list puts a weight in the stat column, which should read
+   as a number rather than as a date. */
+.chrono-weight {
+  display: block;
+  color: var(--at-secondary);
+  font-size: var(--at-font-size-h3);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+@media (min-width: 48rem) {
+  .chrono-row {
+    grid-template-columns: 5rem minmax(0, 1fr) 9rem;
+    grid-template-areas: "week body meta";
+    column-gap: var(--at-spacing-lg);
+    align-items: start;
+  }
+
+  .chrono-meta {
+    margin: 0.25rem 0 0;
+    text-align: end;
+  }
 }
