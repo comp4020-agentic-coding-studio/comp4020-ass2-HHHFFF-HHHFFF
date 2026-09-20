@@ -1,7 +1,33 @@
 ---
+/**
+ * The teaching staff, tiered by the rank the roster is already sorted on.
+ *
+ * A uniform 2-up grid of three cards says these three people are
+ * interchangeable, and leaves a hole in the second row. The convenor — the
+ * person you write to when you do not know who to write to — leads as a
+ * wide row, and the rest follow in a tighter grid. The tiers are read off
+ * `roleRank`, not hardcoded, so adding a fourth person needs no change here.
+ *
+ * Still `Card` underneath: it owns the astro:assets pipeline for the card
+ * illustrations (widths, sizes, format, SVG passthrough), and reimplementing
+ * that to get a different box around it would be a second copy of the one
+ * thing here that is genuinely hard. The layout is applied to the card it
+ * renders, from outside.
+ *
+ * The role label stays inside a `<small>`: spec/people-roles.test.ts reads
+ * the index's `<small>` elements, in document order, as the set of roles the
+ * site states. It is the element the bug it was written for removed.
+ *
+ * That the check still senses this markup was verified by breaking it, not
+ * by watching it pass. Dropping the `<small>` from the two lower-tier cards
+ * and rebuilding: `pnpm build` green at 41 pages with no broken links, while
+ * the spec failed with `the cards are not in seniority order: expected
+ * ["convenor"] to deeply equal ["convenor", "co-lecturer", "tutor"]`. The
+ * tiering moved the labels into two separate containers, which is exactly
+ * the kind of change that could have taken them out of the check's reach.
+ */
 import { getPublishedCollection } from "astro-course-university/content";
 import Card from "astro-theme-university/components/Card.astro";
-import CardGrid from "astro-theme-university/components/CardGrid.astro";
 import { roleLabel, roleRank } from "../lib/people";
 
 const people = await getPublishedCollection("people");
@@ -18,27 +44,110 @@ const visible = people.sort((a, b) => {
   if (ra !== rb) return ra - rb;
   return a.data.title.localeCompare(b.data.title);
 });
+
+// Whoever sorts first leads. Ties at the top rank all lead together, so a
+// course with two convenors gets two wide rows rather than an arbitrary pick.
+const topRank = visible.length > 0 ? roleRank(visible[0].data.role) : 0;
+const leading = visible.filter((p) => roleRank(p.data.role) === topRank);
+const rest = visible.filter((p) => roleRank(p.data.role) !== topRank);
+
+const imageOf = (person: (typeof visible)[number]) =>
+  person.data.cardImage ?? person.data.photo ?? undefined;
+const altOf = (person: (typeof visible)[number]) =>
+  person.data.cardImage ? person.data.cardImageAlt : person.data.photoAlt;
 ---
 
-<CardGrid columns={2}>
+<div class="people">
+  <div class="people-leading">
+    {
+      leading.map((person) => (
+        <Card
+          headingLevel="h2"
+          title={person.data.title}
+          href={`/people/${person.id}/`}
+          image={imageOf(person)}
+          imageAlt={altOf(person)}
+          imageSizes="(min-width: 48rem) 22rem, 100vw"
+        >
+          {roleLabel(person.data.role) && (
+            <p class="people-role">
+              <small>{roleLabel(person.data.role)}</small>
+            </p>
+          )}
+          <p>{person.data.description}</p>
+        </Card>
+      ))
+    }
+  </div>
+
   {
-    visible.map((person) => (
-      <Card
-        headingLevel="h2"
-        title={person.data.title}
-        href={`/people/${person.id}/`}
-        image={person.data.cardImage ?? person.data.photo ?? undefined}
-        imageAlt={
-          person.data.cardImage ? person.data.cardImageAlt : person.data.photoAlt
-        }
-      >
-        {roleLabel(person.data.role) && (
-          <p>
-            <small>{roleLabel(person.data.role)}</small>
-          </p>
-        )}
-        <p>{person.data.description}</p>
-      </Card>
-    ))
+    rest.length > 0 && (
+      <div class="people-rest">
+        {rest.map((person) => (
+          <Card
+            headingLevel="h2"
+            title={person.data.title}
+            href={`/people/${person.id}/`}
+            image={imageOf(person)}
+            imageAlt={altOf(person)}
+          >
+            {roleLabel(person.data.role) && (
+              <p class="people-role">
+                <small>{roleLabel(person.data.role)}</small>
+              </p>
+            )}
+            <p>{person.data.description}</p>
+          </Card>
+        ))}
+      </div>
+    )
   }
-</CardGrid>
+</div>
+
+<style>
+  .people {
+    display: grid;
+    gap: var(--at-spacing-lg);
+    margin-block: var(--at-spacing-lg) var(--at-spacing-xl);
+  }
+
+  .people-leading,
+  .people-rest {
+    display: grid;
+    gap: var(--at-spacing-lg);
+  }
+
+  /* The role is the second thing you read, above the name's own weight but
+     below it in the box. Small caps rather than small grey text so it reads
+     as a label rather than as a caption that got lost. */
+  .people-role {
+    margin: 0 0 var(--at-spacing-sm);
+    color: var(--at-secondary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 48rem) {
+    .people-rest {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* Card stacks its image above its body. For the leading row that becomes
+       a portrait-over-paragraph card twice as tall as it needs to be, so the
+       same DOM is re-laid-out side by side. `:global` because these class
+       names belong to Card, not to this file's scope. */
+    .people-leading :global(.at-card) {
+      display: grid;
+      grid-template-columns: 22rem minmax(0, 1fr);
+      align-items: stretch;
+    }
+
+    .people-leading :global(.at-card-image-frame) {
+      height: 100%;
+    }
+
+    .people-leading :global(.at-card-title) {
+      font-size: var(--at-font-size-h2);
+    }
+  }
+</style>
