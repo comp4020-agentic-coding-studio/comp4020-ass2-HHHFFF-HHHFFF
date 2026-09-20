@@ -1,26 +1,52 @@
 ---
+/**
+ * The four assessments as a chronology, matching the lectures and sessions
+ * indexes. The weight is the thing a student scans this page for, so it
+ * gets the stat column at full size rather than being buried mid-sentence
+ * in a `<small>` line.
+ *
+ * Layout comes from the shared `.chrono` rules in src/styles/layout.css.
+ * Same collection, same sort, same hrefs as the CardGrid this replaces.
+ */
 import { getPublishedCollection } from "astro-course-university/content";
-import Card from "astro-theme-university/components/Card.astro";
-import CardGrid from "astro-theme-university/components/CardGrid.astro";
+import { withBase } from "astro-theme-university/url";
 import { formatCourseDate } from "../lib/dates";
+import "../styles/layout.css";
 
 const assessments = await getPublishedCollection("assessments");
 const visible = assessments.sort((a, b) => a.data.week - b.data.week);
 ---
 
-<CardGrid columns={2}>
-  {
-    visible.map((assessment) => (
-      <Card headingLevel="h2" title={assessment.data.title} href={`/assessments/${assessment.id}/`}>
-        {assessment.data.description && <p>{assessment.data.description}</p>}
-        {assessment.data.weight != null && (
-          <p>
+<div class="bleed">
+  <ol class="chrono bleed-wide">
+    {
+      visible.map((assessment) => (
+        <li class="chrono-row">
+          <span class="chrono-week">
+            <span class="chrono-week-label">Week</span>
+            <span class="chrono-week-number">{assessment.data.week}</span>
+          </span>
+
+          <div class="chrono-body">
+            <h2 class="chrono-title">
+              <a href={withBase(`/assessments/${assessment.id}/`)}>{assessment.data.title}</a>
+            </h2>
+            {assessment.data.description && (
+              <p class="chrono-description">{assessment.data.description}</p>
+            )}
+          </div>
+
+          <p class="chrono-meta">
+            {assessment.data.weight != null && (
+              <span class="chrono-weight">{assessment.data.weight}%</span>
+            )}
             <small>
-              Due {formatCourseDate(assessment.data.due)} · Weight: {assessment.data.weight}%{assessment.data.draft && " · Draft"}
+              Due {formatCourseDate(assessment.data.due)}
+              {assessment.data.draft && " · Draft"}
             </small>
           </p>
-        )}
-      </Card>
-    ))
-  }
-</CardGrid>
+        </li>
+      ))
+    }
+  </ol>
+</div>
