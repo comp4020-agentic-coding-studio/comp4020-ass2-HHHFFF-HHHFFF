@@ -188,6 +188,43 @@ find.
   which is what the error message itself advises. This bit the Pages
   `build_type=workflow` call during the ship; `gh repo edit` and
   `gh workflow run` take no path argument and are unaffected.
+- **A width utility can be applied, built green, and render pixel-identical
+  to no class at all.** `.bleed-wide` set `width: min(100%, 64rem)` inside a
+  `.bleed` subgrid whose `> *` rule pins every child to `content`. The grid
+  area was 864px, so `100%` was 864px, so `min()` returned 864px --- exactly
+  the ordinary content width. Nothing was invalid, nothing was overridden,
+  the build was green, and the screenshot showed a perfectly reasonable
+  paragraph-width band. There is no way to see this by looking: you have to
+  read the number, and the number needs a second element to compare against.
+  The iframe harness reporting `.bleed` 1600, `.bleed-wide` 864, `main > p`
+  864 settled it in one render. **When a fix turns on a width or a span,
+  measure it against a sibling that was never supposed to move** --- the same
+  rule as reading back `getComputedStyle` when a fix turns on one
+  declaration, for the case where the declaration is valid and still does
+  nothing.
+- **Grid line names are only reachable where a subgrid re-exposes them.**
+  `body` defines `full` / `inset` / `content`; `.at-main` is scoped to
+  `inset-start / content-end`, so content inside a page cannot reach `full`
+  without an unlayered `.at-main { grid-column: full }` override plus the
+  theme's own `display: grid; grid-template-columns: subgrid` pattern. Note
+  the override only applies on pages that import the stylesheet carrying it
+  --- the lecture and person detail pages don't, and measure `main` at 900px
+  while the listing pages measure it at 1600px. That difference is invisible
+  in both, because `main > p` is 864px either way.
+- **`--at-content-inset` is `0px` below 640px and the gutter halves with
+  it.** base.css does this in a `@media (width < 640px)` block, which makes
+  any width expression built from the inset alone wrong at 390px:
+  `100% - 2 * var(--at-content-inset)` gave a 390px band in a 390px window,
+  text hard against both edges, while looking fine at 1600px. Subtract the
+  gutter too, and check the band against `main > p` at *both* widths --- the
+  expression that is right at one can be edge-to-edge at the other.
+- **`pnpm build` wipes anything you put in `dist/`,** so a measuring harness
+  copied in there is gone after the next build and the screenshot silently
+  becomes Astro's 404 page. Keep the source in the temp dir and re-copy after
+  every build. It also has to be requested **under the base path** ---
+  `http://localhost:4173/comp4020-ass2-HHHFFF-HHHFFF/measure.html`, not
+  `/measure.html`, which serves a 404 that looks like a broken harness rather
+  than a wrong URL.
 - **Checking a deck at 390px needs two workarounds, and skipping either one
   reads as "the deck is broken".** astromotion shows a first-visit
   `.astromotion-help-hint` card, dismissed by any key or click — which
