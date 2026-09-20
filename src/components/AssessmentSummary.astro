@@ -1,0 +1,150 @@
+---
+/**
+ * The summary block at the top of an assessment page: what it is worth, when
+ * it is due, what you hand in, in what format, where it goes, and the one
+ * thing that has to happen before any of that.
+ *
+ * It replaced a single line reading "Due: 14 May 2027 · Weight: 20%". Student
+ * feedback on that page was that the weight and the deadline were the easy
+ * half — the questions they could not answer without reading the whole brief
+ * were *what am I actually handing in* and *is there something I have to do
+ * first*. Both are frontmatter now (see src/content.config.ts), so they
+ * render here and on the listing page rather than being narrated in the
+ * middle of an argument.
+ *
+ * The action strip is the loudest element on purpose. For the frequency check
+ * it carries booking and rebooking, which used to be an `h2` near the foot of
+ * the brief and a sentence on the policies page — findable only by reading to
+ * the end or by following a related link, and the one rule in the course
+ * whose cost for missing it is the whole component.
+ *
+ * No heading element: this is the page's summary, not a section of it, so it
+ * takes an `.eyebrow` label and leaves the document outline to the brief.
+ */
+import { withBase } from "astro-theme-university/url";
+import { formatCourseDate } from "../lib/dates";
+// For `.eyebrow`. It is not optional: nothing else on a detail page imports
+// layout.css, so without this the class is present, valid and completely
+// inert — the label rendered as sentence-case body text with no rule, which
+// looks like a design choice rather than a missing stylesheet. Verified by
+// reading `text-transform` back off the element, not by looking at it.
+import "../styles/layout.css";
+
+interface Props {
+  due: Date | string;
+  weight: number;
+  submission: { what: string; format: string; where: string };
+  action: { label: string; when: string; detail: string; href?: string };
+}
+
+const { due, weight, submission, action } = Astro.props;
+---
+
+<section class="glance" aria-label="At a glance">
+  <p class="eyebrow">At a glance</p>
+
+  <dl class="glance-grid">
+    <div class="glance-pair">
+      <dt>Due</dt>
+      <dd>{formatCourseDate(due)}</dd>
+    </div>
+    <div class="glance-pair">
+      <dt>Weight</dt>
+      <dd>{weight}% of the course</dd>
+    </div>
+    <div class="glance-pair glance-wide">
+      <dt>Submit</dt>
+      <dd>{submission.what}</dd>
+    </div>
+    <div class="glance-pair glance-wide">
+      <dt>Format</dt>
+      <dd>{submission.format}</dd>
+    </div>
+    <div class="glance-pair glance-wide">
+      <dt>Where</dt>
+      <dd>{submission.where}</dd>
+    </div>
+  </dl>
+
+  <p class="glance-action">
+    <strong>Before that: {action.label}.</strong>
+    {" "}{action.when}. {action.detail}
+    {
+      action.href && (
+        <>
+          {" "}
+          <a href={withBase(action.href)}>Where that happens</a>.
+        </>
+      )
+    }
+  </p>
+</section>
+
+<style>
+  .glance {
+    margin-block: var(--at-spacing-lg) var(--at-spacing-xl);
+    padding: var(--at-spacing-lg);
+    border: 1px solid var(--at-divider);
+    border-radius: 8px;
+    background: var(--at-bg-alt);
+  }
+
+  .glance .eyebrow {
+    margin-block-start: 0;
+  }
+
+  .glance-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--at-spacing-md) var(--at-spacing-lg);
+    margin: 0;
+  }
+
+  /* Due and weight are short enough to sit side by side as soon as there is
+     room; the three submission lines are sentences and stay full width. */
+  @media (min-width: 34rem) {
+    .glance-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .glance-wide {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .glance-pair {
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  .glance-pair dt {
+    color: var(--at-text-muted);
+    font-size: var(--at-font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .glance-pair dd {
+    margin: 0;
+  }
+
+  /* Due and weight are the two figures a student scans for, so they are set
+     at display size; the rest are sentences and stay at body size. */
+  .glance-pair:not(.glance-wide) dd {
+    color: var(--at-secondary);
+    font-size: var(--at-font-size-h4);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+  }
+
+  .glance-action {
+    margin-block: var(--at-spacing-lg) 0;
+    padding: var(--at-spacing-md) var(--at-spacing-md) var(--at-spacing-md)
+      var(--at-spacing-lg);
+    border-inline-start: 4px solid var(--at-primary);
+    border-radius: 0 6px 6px 0;
+    background: var(--at-accent-soft);
+  }
+</style>

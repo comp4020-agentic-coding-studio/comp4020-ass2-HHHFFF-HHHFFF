@@ -232,6 +232,31 @@ find.
   text hard against both edges, while looking fine at 1600px. Subtract the
   gutter too, and check the band against `main > p` at *both* widths --- the
   expression that is right at one can be edge-to-edge at the other.
+- **A `<table>` emitted from a component gets no scroll wrapper, so its
+  min-content width becomes the page's.** The theme's `rehype-table-wrap`
+  only sees tables that came from markdown. A four-row grade table with
+  `white-space: nowrap` on its row header ("High Distinction") pushed
+  `documentElement.scrollWidth` to **402** on one assessment page and **415**
+  on another, against 390 everywhere else — the whole page scrolled sideways
+  at 390px while `pnpm build`, axe and the link checker all stayed green.
+  Measure it by iframing several pages at 390px and reading `scrollWidth`
+  together with the furthest-right element's tag and class, and **put at
+  least one page you did not touch in the same batch**: 402 on its own does
+  not say whether the overflow is yours, and the control is what turns it
+  into an answer in one render. (`lectures/week-03` is a useful second
+  control — it reports a `code` element at 700 and `scrollWidth` 390, which
+  is the theme's wrapper doing its job and looks alarming until you read
+  both numbers.) Merging two narrow columns into one beat adding a scroller:
+  at 390px the three-column version left the prose a 110px measure.
+- **`.eyebrow`, `.chrono` and the rest of `src/styles/layout.css` only exist
+  on pages that import it,** and a class that resolves to nothing looks like
+  a design decision rather than a missing stylesheet. `AssessmentSummary`
+  rendered `<p class="eyebrow">At a glance</p>` as sentence-case body text
+  with no rule, on a detail page where nothing else pulled layout.css in —
+  perfectly plausible, and wrong. Same shape as the `.bleed-wide` and
+  `.at-main` notes above: the fix is one `import`, and the way to confirm it
+  is reading `text-transform` back off the element through the iframe
+  harness, not looking at the screenshot.
 - **`pnpm build` wipes anything you put in `dist/`,** so a measuring harness
   copied in there is gone after the next build and the screenshot silently
   becomes Astro's 404 page. Keep the source in the temp dir and re-copy after

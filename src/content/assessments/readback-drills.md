@@ -6,6 +6,41 @@ description:
 week: 4
 due: 2027-03-19T12:00:00+11:00
 weight: 15
+submission:
+  what: >-
+    A recording of all twelve readbacks, plus a note under 200 words on the
+    confusion pairs you found in week 2
+  format: >-
+    One audio file (mp3, m4a or wav) and one PDF. No editing between
+    clearances
+  where: The course submission folder, by Friday noon of week 4
+action:
+  label: Collect the clearance sheet
+  when: Week 4 sim session
+  detail: >-
+    The twelve clearances are handed out in the session and are published
+    nowhere else, so the work cannot start before you have the sheet. If you
+    cannot record, say so before Friday and the drill runs live in a booked
+    slot instead, at no penalty.
+  href: /sessions/04-clearance-drills/
+bands:
+  P: >-
+    All twelve clearances are read back and the note names your confusion
+    pairs. The readbacks carry the substance of each clearance, and the errors
+    that remain are ones a controller would have caught on frequency.
+  CR: >-
+    Readbacks are accurate and mostly standard. What slips is form rather than
+    content, and the note says what you did about a confusion rather than only
+    that you had one.
+  D: >-
+    Accurate and standard throughout, numbers and callsigns included, and the
+    note traces one specific confusion to the drill you built against it and
+    reports whether the drill worked.
+  HD: >-
+    Everything in Distinction, and the recording shows the habit rather than
+    the performance — a mid-readback CORRECTION in standard form, a clearance
+    queried rather than guessed at, and a note honest about a confusion that
+    is still there.
 marking:
   mode: weighted
   criteria:

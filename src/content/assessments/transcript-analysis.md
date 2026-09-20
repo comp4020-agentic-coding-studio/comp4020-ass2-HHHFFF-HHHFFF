@@ -6,6 +6,39 @@ description:
 week: 7
 due: 2027-04-23T12:00:00+10:00
 weight: 30
+submission:
+  what: >-
+    A timed transcript of your allocated exchange, a diagnosis of every
+    deviation you claim, and a finding of 600 to 800 words
+  format: >-
+    One PDF. The transcript uses the timings, station labels and notation
+    used across this site, with unintelligible passages marked as such
+  where: The course submission folder, by Friday noon of week 7
+action:
+  label: Collect your allocated exchange
+  when: Week 6
+  detail: >-
+    One exchange per student, allocated in week 6. Nobody else has yours, and
+    the audio is not published, so there is nothing to work on until you have
+    it. Comparing transcripts with somebody holding a different exchange is
+    fine; comparing with somebody holding yours is not.
+  href: /sessions/06-levels-and-pressure/
+bands:
+  P: >-
+    The transcript covers the full exchange with timings and station labels,
+    gaps are marked rather than filled in, and the finding makes one claim
+    about what happened.
+  CR: >-
+    Deviations are named against a specific standard phrase rather than called
+    non-standard, and the finding quotes the transmission it rests on.
+  D: >-
+    Every claim is located in the audio and named against the glossary or ICAO
+    phraseology, and the diagnosis says what each deviation risked in this
+    exchange rather than in general.
+  HD: >-
+    Everything in Distinction, and a reader who disagrees can take the finding
+    apart: the step from what was said to what it risked is exposed, and you
+    say what four minutes of audio cannot settle.
 marking:
   mode: weighted
   criteria:

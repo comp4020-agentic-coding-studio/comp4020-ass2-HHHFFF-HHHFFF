@@ -6,6 +6,37 @@ description:
 week: 12
 due: 2027-05-28T12:00:00+10:00
 weight: 20
+submission:
+  what: >-
+    You, on a live frequency, for ten minutes, working the pilot position and
+    the controller position
+  format: >-
+    Live in the sim. Nothing is uploaded and nothing is recorded for marking
+  where: Your booked slot, in and after the week 12 session
+action:
+  label: Book your slot, and rebook it free if it stops working
+  when: Slots open in week 10 and are booked in that week's sim session
+  detail: >-
+    Rebooking before your slot is free and needs no reason — mail the convenor
+    with a new time. Not appearing without rebooking is a non-submission, and
+    the policies page has the route back from that.
+  href: /sessions/10-datalink-only/
+bands:
+  P: >-
+    Routine clearances are understood and read back correctly, and when you
+    are lost you say so rather than guessing, even if the way you say it is
+    not the standard way.
+  CR: >-
+    Standard phraseology most of the time, queries in standard form, and both
+    seats worked rather than only the pilot's.
+  D: >-
+    An unfamiliar clearance is handled the honest way — the part you got read
+    back, the part you did not named — and UNABLE is used where it belongs.
+  HD: >-
+    Everything in Distinction, held under load and on both sides of the
+    exchange. Uncertainty becomes visible the moment it appears and is
+    resolved on frequency, and the controller seat is as solid as the pilot
+    seat.
 marking:
   mode: holistic
   description: >-
@@ -72,9 +103,22 @@ This is where the assessment actually happens.
 
 ## Booking and rebooking
 
-Slots open in week 10. Rebooking before your slot is free and needs no reason.
-Not appearing without rebooking is a non-submission, and the policies page has
-the route back from that.
+The rule is at the top of this page because missing it costs you the
+component. The rest of it is here.
+
+Slots open in [week 10](/sessions/10-datalink-only/) and are booked in that
+session. They run through the week after the
+[week 12 presentations](/sessions/12-presentations/), so there is more room
+than there are students and no advantage in booking first.
+
+Rebooking is free, needs no reason, and has no limit, as long as you do it
+before the slot you hold. That is deliberate: a rebooking policy that costs
+something teaches students to turn up to a check they are not ready for, and
+a check you sit unprepared measures nothing anybody wanted to know.
+
+Not appearing without rebooking is a non-submission. It cannot be late the
+way a file can, so the fix is a new slot rather than a penalty — see
+[policies](/policies/), and tell us sooner rather than later.
 
 ## After the check
 

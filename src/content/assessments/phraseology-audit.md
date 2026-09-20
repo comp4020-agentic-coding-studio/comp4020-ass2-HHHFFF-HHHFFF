@@ -6,6 +6,38 @@ description:
 week: 11
 due: 2027-05-21T12:00:00+10:00
 weight: 35
+submission:
+  what: >-
+    An audit of 1500 to 2000 words, a table of proposed phrases with the
+    failure each one is designed against, and a limits section
+  format: >-
+    One PDF, with the proposed phraseology as a table rather than as prose
+  where: The course submission folder, by Friday noon of week 11
+action:
+  label: Clear your domain
+  when: Week 9, in the sim session
+  detail: >-
+    Domains are cleared before you gather evidence, not after. The usual
+    reason one is rejected is that it cannot be observed ethically, and that
+    is far cheaper to find out in week 9 than in week 11.
+  href: /sessions/09-degraded-audio/
+bands:
+  P: >-
+    The domain is a real spoken protocol with real speakers under real
+    pressure, the evidence is first-hand or published rather than remembered,
+    and a limits section exists.
+  CR: >-
+    Every proposed phrase names the failure it is designed against, and the
+    evidence gathered is enough to show that failure actually happens in this
+    domain.
+  D: >-
+    The phrase set is small enough to learn and removes ambiguity rather than
+    relabelling it, and the limits section names a specific way the proposal
+    could make things worse.
+  HD: >-
+    Everything in Distinction, and the audit transfers this course's reasoning
+    instead of transplanting aviation's vocabulary. The strongest work in this
+    band has argued that its own proposal should not be adopted.
 marking:
   mode: weighted
   criteria:

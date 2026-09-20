@@ -5,8 +5,9 @@ import RelatedContent from "astro-course-university/components/RelatedContent.as
 import SpecList from "astro-course-university/components/SpecList.astro";
 import Callout from "astro-theme-university/components/Callout.astro";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
+import AssessmentSummary from "../../components/AssessmentSummary.astro";
+import GradeBands from "../../components/GradeBands.astro";
 import MarkingModel from "../../components/MarkingModel.astro";
-import { formatCourseDate } from "../../lib/dates";
 import { graphCollections, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
@@ -35,7 +36,12 @@ const { Content } = await render(assessment);
       </Callout>
     )
   }
-  <p><strong>Due:</strong> {formatCourseDate(assessment.data.due)} · <strong>Weight:</strong> {assessment.data.weight}%</p>
+  <AssessmentSummary
+    due={assessment.data.due}
+    weight={assessment.data.weight}
+    submission={assessment.data.submission}
+    action={assessment.data.action}
+  />
   <Content />
   <SpecList spec={assessment.data.spec}>
     The brief poses the problem and leaves room for a response. The spec is the
@@ -43,5 +49,6 @@ const { Content } = await render(assessment);
     the rest call for judgement.
   </SpecList>
   {assessment.data.marking && <MarkingModel marking={assessment.data.marking} />}
+  <GradeBands bands={assessment.data.bands} mode={assessment.data.marking?.mode} />
   <RelatedContent entry={assessment} collections={graphCollections} />
 </ContentLayout>

@@ -5,8 +5,16 @@
  * gets the stat column at full size rather than being buried mid-sentence
  * in a `<small>` line.
  *
- * Layout comes from the shared `.chrono` rules in src/styles/layout.css.
- * Same collection, same sort, same hrefs as the CardGrid this replaces.
+ * Each row also carries what you hand in, in what format, where it goes, and
+ * the step that has to happen before the deadline. That is the whole of what
+ * students said they wanted from this page: enough to plan a semester from
+ * the index, with the brief left for when the work starts. It is four lines
+ * per row rather than a card of prose because the comparison across
+ * components — which of these is a file and which of these is an appointment
+ * — is the thing the page is for.
+ *
+ * Row layout comes from the shared `.chrono` rules in src/styles/layout.css;
+ * the summary lines are scoped here because only this index has them.
  */
 import { getPublishedCollection } from "astro-course-university/content";
 import { withBase } from "astro-theme-university/url";
@@ -33,6 +41,26 @@ const visible = assessments.sort((a, b) => a.data.week - b.data.week);
           {assessment.data.description && (
             <p class="chrono-description">{assessment.data.description}</p>
           )}
+
+          <dl class="row-summary">
+            <div>
+              <dt>Submit</dt>
+              <dd>{assessment.data.submission.what}</dd>
+            </div>
+            <div>
+              <dt>Format</dt>
+              <dd>{assessment.data.submission.format}</dd>
+            </div>
+            <div>
+              <dt>Where</dt>
+              <dd>{assessment.data.submission.where}</dd>
+            </div>
+          </dl>
+
+          <p class="row-action">
+            <strong>Before that:</strong> {assessment.data.action.label} —{" "}
+            {assessment.data.action.when}.
+          </p>
         </div>
 
         <p class="chrono-meta">
@@ -48,3 +76,61 @@ const visible = assessments.sort((a, b) => a.data.week - b.data.week);
     ))
   }
 </ol>
+
+<style>
+  /* A labelled line each, not a two-column table: the labels are three
+     short words and the values are sentences, so a label column wide enough
+     for "Format" would leave the sentences in a 7rem-narrower measure for
+     no gain. */
+  .row-summary {
+    margin: 0.75rem 0 0;
+    display: grid;
+    gap: 0.3rem;
+    font-size: 0.95rem;
+  }
+
+  /* Stacked by default, two columns only once there is room. Measured at
+     390px with the label column on: the row is 264px wide (the week figure
+     takes the rest), so a 4.5rem label left the sentences a 174px measure —
+     "A recording of all twelve readbacks, plus a note under 200 words on the
+     confusion pairs you found in week 2" over seven lines of four words.
+     The label above its value costs one line and buys back 90px. */
+  .row-summary div {
+    display: grid;
+    gap: 0 var(--at-spacing-sm);
+  }
+
+  @media (min-width: 30rem) {
+    .row-summary div {
+      grid-template-columns: 4.5rem minmax(0, 1fr);
+    }
+  }
+
+  .row-summary dt {
+    color: var(--at-text-muted);
+    font-size: var(--at-font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    /* The label is small caps against a body-size value; align the baselines
+       rather than the boxes or it rides high. */
+    align-self: baseline;
+  }
+
+  .row-summary dd {
+    margin: 0;
+    color: var(--at-text-secondary);
+  }
+
+  .row-action {
+    margin: 0.6rem 0 0;
+    padding-inline-start: var(--at-spacing-sm);
+    border-inline-start: 3px solid var(--at-primary);
+    color: var(--at-text-secondary);
+    font-size: 0.95rem;
+  }
+
+  .row-action strong {
+    color: var(--at-text);
+  }
+</style>

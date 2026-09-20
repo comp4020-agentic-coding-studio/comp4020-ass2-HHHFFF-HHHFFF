@@ -1,0 +1,140 @@
+---
+/**
+ * What work at each grade actually looks like, for one assessment.
+ *
+ * The criteria table above this one says what is being marked and how the
+ * hundred is split. It does not say what the difference between 62 and 78
+ * is, and students said that gap was the thing they most wanted closed: a
+ * weight tells you what a component is worth, never what it has to be.
+ *
+ * The bands are cumulative — each is written as the one below it plus
+ * something — which is why src/lib/grades.ts orders them ascending and why
+ * the table reads downwards.
+ *
+ * The holistic note is not decoration. The frequency check argues at length
+ * that a checklist for live radio work is gameable in the wrong direction,
+ * and a band table printed under that argument without comment would read as
+ * the course contradicting itself on its own page.
+ */
+import { gradeBands, type GradeBandDescriptions } from "../lib/grades";
+
+interface Props {
+  bands: GradeBandDescriptions;
+  mode?: "weighted" | "holistic";
+}
+
+const { bands, mode } = Astro.props;
+---
+
+<section aria-labelledby="grade-bands">
+  <h2 id="grade-bands">What each grade looks like</h2>
+
+  <p>
+    {
+      mode === "holistic" ? (
+        <>
+          This component is judged as one performance rather than summed from
+          criteria, so the bands below describe what that judgement has looked
+          like at each level. They are not a checklist, and working through
+          them in order during the check is not how anybody has reached the
+          top one.
+        </>
+      ) : (
+        <>
+          The criteria above say what is being marked. These say what each
+          level of it looks like. Each band assumes the one before it.
+        </>
+      )
+    }
+  </p>
+
+  <table class="bands">
+    <thead>
+      <tr>
+        <th scope="col">Grade</th>
+        <th scope="col">What work in this band does</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        gradeBands.map((band) => (
+          <tr>
+            {/*
+              Grade, name and mark range in one cell rather than three
+              columns. At 390px the three-column version left the
+              description a 110px measure — "All twelve / clearances / are
+              read back" — because the two narrow columns and their padding
+              took 165px of a 354px table. Nothing is lost by merging: the
+              range is a property of the grade, not a separate fact.
+            */}
+            <th scope="row">
+              <span class="band-key">{band.key}</span>
+              <span class="band-name">{band.name}</span>
+              <span class="band-range">{band.range}</span>
+            </th>
+            <td>{bands[band.key]}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</section>
+
+<style>
+  .bands {
+    width: 100%;
+  }
+
+  .bands th[scope="row"] {
+    /* Left-aligned and top-aligned against a multi-line description, so the
+       grade label sits beside the first line of its band rather than
+       floating in the middle of it. */
+    text-align: start;
+    vertical-align: baseline;
+  }
+
+  /* No `white-space: nowrap` on that header, and this is the second attempt.
+     With it, "High Distinction" set the column's min-content width, the
+     table's min-content exceeded the 390px viewport, and — unlike a table
+     written in markdown, which the theme's rehype-table-wrap puts in a
+     scrolling box — a table emitted from a component gets no wrapper. So the
+     whole *page* scrolled sideways: measured `documentElement.scrollWidth`
+     402 here and 415 on the readback drills, against 390 on every page this
+     change does not touch, with `table.bands` reported as the furthest-right
+     element on both. Wrapping the name is the cheaper fix than a scroller
+     nobody wants on a four-row table. */
+
+  .bands td {
+    vertical-align: baseline;
+  }
+
+  .band-key {
+    display: block;
+    color: var(--at-secondary);
+    font-size: var(--at-font-size-h4);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .band-name {
+    display: block;
+    color: var(--at-text-muted);
+    font-size: var(--at-font-size-xs);
+    font-weight: 400;
+    text-wrap: balance;
+  }
+
+  .band-range {
+    display: block;
+    color: var(--at-text-secondary);
+    font-size: var(--at-font-size-xs);
+    font-variant-numeric: tabular-nums;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  /* The description column carries the content and should get the width. */
+  .bands td {
+    width: 100%;
+  }
+</style>
