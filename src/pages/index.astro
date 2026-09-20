@@ -19,11 +19,15 @@ import "../styles/layout.css";
   <section class="bleed">
     <div class="bleed-wide masthead-grid">
       <div class="masthead-primary">
+        <p class="eyebrow">
+          {courseMeta.session} · {courseMeta.year} · Level {courseMeta.level}
+        </p>
+
         <ul class="course-tags" aria-label="Course tags">
           {courseMeta.tags.map((tag) => <li>{tag}</li>)}
         </ul>
 
-        <p class="lede lede-xl">
+        <p class="lede lede-xl dropcap">
           Aviation radio English is a language built on purpose, by
           identifiable people, to make one kind of mistake impossible. It is
           worse than ordinary English at nearly everything, and that is the
@@ -44,7 +48,7 @@ import "../styles/layout.css";
     </div>
   </section>
 
-  <h2>What you will do</h2>
+  <h2 class="section-head">What you will do</h2>
 
   <p>
     You will be on a simulated frequency in week 1 and every week after it. You
@@ -65,7 +69,7 @@ import "../styles/layout.css";
     with an honest account of how your own proposal could make things worse.
   </p>
 
-  <h2>Who it is for</h2>
+  <h2 class="section-head">Who it is for</h2>
 
   <p>
     First-year students, no prerequisites, no aviation background assumed and
@@ -101,7 +105,7 @@ import "../styles/layout.css";
 
   <section class="bleed">
     <div class="bleed-wide">
-      <h2>The twelve weeks</h2>
+      <h2 class="section-head">The twelve weeks</h2>
 
       <p>
         The lecture argues, the sim session drills, and four times a semester
@@ -112,7 +116,7 @@ import "../styles/layout.css";
     </div>
   </section>
 
-  <h2>How it is marked</h2>
+  <h2 class="section-head">How it is marked</h2>
 
   <p>
     Four components. A small early drill to establish you can operate the thing
@@ -123,7 +127,7 @@ import "../styles/layout.css";
     says why at length.
   </p>
 
-  <h2>Where to go next</h2>
+  <h2 class="section-head">Where to go next</h2>
 
   <DestinationTiles />
 </ContentLayout>

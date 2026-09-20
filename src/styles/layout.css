@@ -85,6 +85,66 @@
 }
 
 /*
+ * Editorial ornament. Every value below comes out of the brand tokens —
+ * --at-primary for the rules and figures, --at-accent-soft for the washes,
+ * --at-shadow-* for the lifts — so none of this is a second palette running
+ * alongside the Slop one. What it adds is weight and hierarchy, which is
+ * what "plain" actually meant: the page had one type size and one rule
+ * style doing every job on it.
+ */
+
+/* A short brand rule over a small-caps label: the magazine device for
+   "a new section starts here", and cheaper than another heading level. */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--at-spacing-sm);
+  margin: 0 0 var(--at-spacing-sm);
+  color: var(--at-secondary);
+  font-size: var(--at-font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 2.5rem;
+  height: 2px;
+  background: var(--at-secondary);
+}
+
+/* Section headings carry their own rule rather than relying on whitespace
+   alone. A short bar, not a full-width one: the page already has a vertical
+   brand rule down its left, and full-width horizontals fight it. */
+.section-head {
+  margin-block-start: var(--at-spacing-2xl);
+  font-size: clamp(var(--at-font-size-h2), 2vw + 0.9rem, 2.375rem);
+  line-height: 1.15;
+}
+
+.section-head::before {
+  content: "";
+  display: block;
+  width: 3.5rem;
+  height: 3px;
+  margin-block-end: var(--at-spacing-md);
+  background: var(--at-primary);
+}
+
+/* The opening paragraph gets a drop cap. `float` rather than grid because
+   the following lines have to wrap around it; `::first-letter` inherits the
+   paragraph's own font, so it tracks a type change upstream. */
+.dropcap::first-letter {
+  float: inline-start;
+  margin-inline-end: 0.07em;
+  color: var(--at-primary);
+  font-size: 3.4em;
+  font-weight: 700;
+  line-height: 0.82;
+}
+
+/*
  * The chronology row list, shared by the lectures, sessions and assessments
  * indexes. All three are week-ordered sequences, and a symmetric 2-up card
  * grid says the opposite — that the entries are interchangeable. One row per
@@ -103,14 +163,54 @@
 }
 
 .chrono-row {
+  position: relative;
   display: grid;
   grid-template-columns: 4rem minmax(0, 1fr);
   grid-template-areas:
     "week body"
     "week meta";
   column-gap: var(--at-spacing-md);
-  padding-block: var(--at-spacing-lg);
+  /* The inline padding is what lets the hover wash read as a band around the
+     row rather than a rectangle starting at the first letter. The matching
+     negative margin puts the row's *box* into the margin while leaving its
+     content on the page's left rail. Measured on /lectures/ at 1600px:
+     `main > p` and `.chrono-week` both at x=386, the row box at x=368. Note
+     it is the week column that lands on the rail, not `.chrono-title` — the
+     title is at x=503, one grid column further in, which is where it should
+     be and is not what this margin is protecting. */
+  padding: var(--at-spacing-lg) var(--at-spacing-md);
+  margin-inline: calc(var(--at-spacing-md) * -1);
   border-block-end: 1px solid var(--at-divider);
+  transition:
+    background-color 0.15s,
+    box-shadow 0.15s;
+}
+
+/* The row is not itself a link — only the title is — so the wash is driven
+   off `:has()` rather than `:hover`, and it follows keyboard focus too. */
+.chrono-row:has(a:hover),
+.chrono-row:has(a:focus-visible) {
+  background: var(--at-accent-soft);
+  box-shadow: var(--at-shadow-sm);
+}
+
+/* A brand bar down the leading edge on hover. `scaleY` from zero rather
+   than a width change, so it wipes in instead of nudging the layout. */
+.chrono-row::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 3px;
+  background: var(--at-primary);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.15s;
+}
+
+.chrono-row:has(a:hover)::before,
+.chrono-row:has(a:focus-visible)::before {
+  transform: scaleY(1);
 }
 
 .chrono-week {
@@ -128,10 +228,13 @@
   color: var(--at-text-muted);
 }
 
+/* The figure is the loudest thing in the row on purpose. Tabular numerals
+   so 1 and 11 occupy the same box and the column stays a column. */
 .chrono-week-number {
-  font-size: 2rem;
+  font-size: clamp(2rem, 1.2vw + 1.6rem, 3rem);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 .chrono-body {
@@ -140,8 +243,8 @@
 
 .chrono-title {
   margin: 0;
-  font-size: var(--at-font-size-h3);
-  line-height: 1.25;
+  font-size: clamp(var(--at-font-size-h3), 0.7vw + 1.1rem, 1.625rem);
+  line-height: 1.22;
 }
 
 .chrono-title a {
@@ -169,7 +272,7 @@
 .chrono-weight {
   display: block;
   color: var(--at-secondary);
-  font-size: var(--at-font-size-h3);
+  font-size: clamp(var(--at-font-size-h3), 1vw + 1.1rem, 2rem);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
